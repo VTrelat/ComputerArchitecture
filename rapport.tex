@@ -103,24 +103,60 @@ a. Montrer que xor est associatif et commutatif puis recopier calcul\\
 b. inclure schéma
 
 \subsection{Exercice 4}
-a. On écrit le code suivant :
+a. On écrit le code suivant :\\
 \begin{lstlisting}[style=CStyle]
-#include <stdio.h>
-
-int main(){
-    printf("Sizeof int: %lu octets\n", sizeof(int));
-    printf("Sizeof short: %lu octets\n", sizeof(short));
-    printf("Sizeof char: %lu octets\n", sizeof(char));
-    return 0;
+int main()
+    {
+        printf("Sizeof int: %lu octets\n", sizeof(int));
+        printf("Sizeof short: %lu octets\n", sizeof(short));
+        printf("Sizeof char: %lu octets\n", sizeof(char));
+        return 0;
     }
 \end{lstlisting}
 
-La sortie est la suivante :
+La sortie est la suivante :\\
 \begin{lstlisting}[frame = single]
-Sizeof int: 4 octets
-Sizeof short: 2 octets
-Sizeof char: 1 octets
+    Sizeof int: 4 octets
+    Sizeof short: 2 octets
+    Sizeof char: 1 octets
 \end{lstlisting}
 
-b. 
+b. On écrit le code suivant :
+\begin{lstlisting}[style=CStyle]
+int main()
+    {
+        int a = pow(2, 31);
+        int b = pow(2, 31);
+        int c = a + b;
+        printf("%d\n", c);
+        return 0;
+    }
+\end{lstlisting}
+
+La sortie affiche 0, ce qui correspond bien à $2^{32} \mod(2^{32})$
+
+\subsection{Exercice 5}
+On donne ci-dessous l'écriture binaire sur 4 et 8 bits de 0, 1, -1 et -2:
+\begin{center}
+    \begin{tabular}{c | c | c} 
+    $x$ & 4 bits & 8 bits\\
+        \hline
+        \hline
+    0 :& 0000 & 0000 0000\\ 
+    1 :& 0001 & 0000 0001\\
+    -1 :& 1111 & 1111 1111\\
+    -2 :& 1110 & 1111 1110\\
+     \hline
+    \end{tabular}
+\end{center}
+
+\subsection{Exercice 6}
+a. $m_1 = 0001$ et $m_{-1} = 1001$.
+
+b. En abusant de la notation + pour des mots : $m_0 = m_1 + m_{-1} = 1010$.
+
+c. En suivant la règle de signes, 1010 est l'encodage de -2.
+
+\subsection{Exercice 7}
+
 \end{document}
