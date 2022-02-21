@@ -158,5 +158,24 @@ b. En abusant de la notation + pour des mots : $m_0 = m_1 + m_{-1} = 1010$.
 c. En suivant la règle de signes, 1010 est l'encodage de -2.
 
 \subsection{Exercice 7}
+Soit $b$ un nombre de bits. Soit $x$ un entier relatif qu'on souhaite représenter sur $b$ bits.\\
+Si $x \geq 0$, alors l'encodage de $x$ correspond à une écriture dans $[0, 2^{b-1}-1]$, alors cette écriture commence par un zéro (de 00...0 à 01...1). Si $x < 0$, alors $2^b - x \in [2^{b-1}, 2^b-1]$ (soit de 10...0 à 11...1), son écriture commence par un 1.
+
+
+\subsection{Exercice 8}
+Dans le premier code, on dispose de 2 cases mémoires différentes. Le résultat affiché est -106 pour la valeur de d, ce qui est normal puisque d est signé.\\
+Dans le deuxième code, on utilise une seule case mémoire à travers l'utilisation de deux pointeurs, un signé et un non signé. Le résultat affiché est identique au premier code.\\
+Cela permet de montrer que la mémoire est "non typée", l'interprétation de la valeur mémoire dépend directement du type de l'objet qui lit cette valeur.
+
+\subsection{Exercice 9}
+a. 10 s'écrit $2\times5$ et toute puissance de 2 s'écrit $2^k$ où $k\in \mathbb{N}$.\\
+Ainsi, si $x \in 2^{\mathbb{N}}$ (par abus de langage) est divisible par 10, alors $x$ contient au moins 2 et 5 dans sa décomposition en facteurs premiers, ce qui donne une contradition avec la propriété précédemment énoncée.\\
+
+b. Supposons que $0.1$ soit représentable sur $kl$ bits. Alors, d'après le résultat du cours, $2^l \times 0.1$ est un entier, autrement dit $2^l$ est divisible par 10. D'après la question précédente, c'est impossible.
+
+\subsection{Exercice 10}
+L'écriture binaire approchée de $0.1$ est $0.0001~1001_2$, de valeur décimale $0.09765625$.
+
+\subsection{Eexercice 11}
 
 \end{document}
