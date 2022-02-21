@@ -1,4 +1,4 @@
-\documentclass[a4 paper, 12pt]{article}
+\documentclass[11pt, a4 paper]{article}
 \usepackage[french]{babel}
 \usepackage{amsmath, amsthm, amsfonts, amssymb, mathrsfs}
 \usepackage{hyperref}
@@ -9,11 +9,16 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{multicol}
+\usepackage{circuitikz}
+\usetikzlibrary{babel}
+\usetikzlibrary{backgrounds}
 
 \definecolor{mGreen}{rgb}{0,0.6,0}
 \definecolor{mGray}{rgb}{0.5,0.5,0.5}
 \definecolor{mPurple}{rgb}{0.58,0,0.82}
 \definecolor{backgroundColour}{rgb}{0.92,0.92,0.95}
+
+\newcommand{\halmos}{\hfill$\blacksquare$}
 
 \lstdefinestyle{CStyle}{
     backgroundcolor=\color{backgroundColour},   
@@ -99,9 +104,83 @@ On donne la table de $c_0$ :
 On peut interpréter cette table comme la table de vérité du "ou exclusif", le \textit{xor}. Ainsi, $c_0$ coincide avec $a_0 \oplus b_0 = (a_0 \vee b_0) \wedge (\neg (a_0 \wedge b_0))$.
 
 \subsection{Exercice 3}
-a. Montrer que xor est associatif et commutatif puis recopier calcul\\
+a. Montrons que l'opérateur xor $\oplus$ est associatif et commutatif :\\
+Soient $a, b, c \in \{0, 1\}$.\\
 
-b. inclure schéma
+\textbf{Associativité :} on donne ci-dessous la table de vérité de $(a \oplus b) \oplus c$ et $a \oplus (b \oplus c)$:
+\begin{center}
+    \begin{tabular}{||c | c | c | c | c | c ||} 
+     \hline
+     $a$ & $b$ & $c$ & $a \oplus b$ & $(a \oplus b) \oplus c$ & $a \oplus (b \oplus c)$ \\ [0.5ex] 
+     \hline\hline
+    %a   b   c  a+b  r1 r2
+     0 & 0 & 0 & 0 & 0 & 0\\ 
+     0 & 0 & 1 & 0 & 1 & 1\\ 
+     1 & 0 & 0 & 1 & 0 & 0\\ 
+     1 & 0 & 1 & 1 & 0 & 0\\ 
+     0 & 1 & 0 & 1 & 1 & 1\\ 
+     0 & 1 & 1 & 1 & 0 & 0\\ 
+     1 & 1 & 0 & 0 & 0 & 0\\ 
+     1 & 1 & 1 & 0 & 1 & 1\\ 
+     \hline
+    \end{tabular}
+\end{center}
+
+\textbf{Commutativité :} on donne ci-dessous la table de vérité de $a \oplus b$ et $b \oplus a$:
+\begin{center}
+    \begin{tabular}{||c | c | c | c ||} 
+     \hline
+     $a$ & $b$ & $a \oplus b$ & $b \oplus a$ \\ [0.5ex] 
+     \hline\hline
+    %a   b  a+b  b+a
+    0 & 0 & 0 & 0 \\
+    0 & 1 & 1 & 1 \\
+    1 & 0 & 1 & 1 \\
+    1 & 1 & 0 & 0 \\
+     \hline
+    \end{tabular}
+\end{center}
+
+Enfin, $a \oplus a = 0$ et $a \oplus 0 = a$.\\
+
+On peut maintenant montrer le résultat demandé :\\
+\begin{equation*}
+    d = a \oplus c = a \oplus (a \oplus b) = a \oplus a \oplus b = b
+\end{equation*}
+
+\begin{equation*}
+    e = b \oplus c = b \oplus (a \oplus b) = b \oplus a \oplus b = a
+\end{equation*}
+
+\halmos
+
+b.
+\begin{center}
+    \begin{circuitikz}[framed]
+        % \draw (0,0) node[ american and port ] {};
+        % \draw (0,2) node[ american or port ] {};
+        % \draw (0,6) node[ american not port ] {};
+    
+        \draw (0,1) node (a) {a};
+        \draw (7,1) node (d) {d};
+        \draw (0,-1) node (b) {b};
+        \draw (7,-1) node (e) {e};
+        \draw (3,0) node[ american xor port ] (xor1) {};
+        \draw (6,1) node[ american xor port ] (xor2) {};
+        \draw (6,-1) node[ american xor port ] (xor3) {};
+        
+        \draw (.2, 1) -- (xor1.in 1);
+        \draw (.2, 1) -| (xor2.in 1);
+        \draw (xor1.out) |- (xor2.in 2);
+        \draw (xor1.out) |- (xor3.in 1);
+        \draw (.2, -1) -- (xor1.in 2);
+        \draw (.2, -1) -| (xor3.in 2);
+        
+        \draw (xor2.out) -| (6.8,1);
+        \draw (xor3.out) -| (6.8,-1);
+        
+    \end{circuitikz}
+\end{center}
 
 \subsection{Exercice 4}
 a. On écrit le code suivant :\\
@@ -162,6 +241,8 @@ c. En suivant la règle de signes, 1010 est l'encodage de -2.
 Soit $b$ un nombre de bits. Soit $x$ un entier relatif qu'on souhaite représenter sur $b$ bits.\\
 Si $x \geq 0$, alors l'encodage de $x$ correspond à une écriture dans $[0, 2^{b-1}-1]$, alors cette écriture commence par un zéro (de 00...0 à 01...1). Si $x < 0$, alors $2^b - x \in [2^{b-1}, 2^b-1]$ (soit de 10...0 à 11...1), son écriture commence par un 1.
 
+\halmos
+
 
 \subsection{Exercice 8}
 Dans le premier code, on dispose de 2 cases mémoires différentes. Le résultat affiché est -106 pour la valeur de d, ce qui est normal puisque d est signé.\\
@@ -172,7 +253,11 @@ Cela permet de montrer que la mémoire est "non typée", l'interprétation de la
 a. 10 s'écrit $2\times5$ et toute puissance de 2 s'écrit $2^k$ où $k\in \mathbb{N}$.\\
 Ainsi, si $x \in 2^{\mathbb{N}}$ (par abus de langage) est divisible par 10, alors $x$ contient au moins 2 et 5 dans sa décomposition en facteurs premiers, ce qui donne une contradition avec la propriété précédemment énoncée.\\
 
+\halmos
+
 b. Supposons que $0.1$ soit représentable sur $kl$ bits. Alors, d'après le résultat du cours, $2^l \times 0.1$ est un entier, autrement dit $2^l$ est divisible par 10. D'après la question précédente, c'est impossible.
+
+\halmos
 
 \subsection{Exercice 10}
 L'écriture binaire approchée de $0.1$ est $0.0001~1001_2$, de valeur décimale $0.09765625$.
