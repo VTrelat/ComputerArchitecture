@@ -8,11 +8,12 @@
 \usepackage[ruled,vlined, linesnumbered]{algorithm2e}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{multicol}
 
 \definecolor{mGreen}{rgb}{0,0.6,0}
 \definecolor{mGray}{rgb}{0.5,0.5,0.5}
 \definecolor{mPurple}{rgb}{0.58,0,0.82}
-\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+\definecolor{backgroundColour}{rgb}{0.92,0.92,0.95}
 
 \lstdefinestyle{CStyle}{
     backgroundcolor=\color{backgroundColour},   
@@ -115,7 +116,7 @@ int main()
 \end{lstlisting}
 
 La sortie est la suivante :\\
-\begin{lstlisting}[frame = single]
+\begin{lstlisting}[style=CStyle]
     Sizeof int: 4 octets
     Sizeof short: 2 octets
     Sizeof char: 1 octets
@@ -177,5 +178,119 @@ b. Supposons que $0.1$ soit représentable sur $kl$ bits. Alors, d'après le ré
 L'écriture binaire approchée de $0.1$ est $0.0001~1001_2$, de valeur décimale $0.09765625$.
 
 \subsection{Exercice 11}
+a. On écrit la fonction suivante en C :
 
+\begin{lstlisting}[style=CStyle]
+int main() {
+    for (int i = 0; i<10; i++){
+        for (int j = 0; j < 10; j++){
+            float a = i/10.0, b = j/10.0, c = (i+j)/10.0;
+            printf("(%d, %d) : %s\n", i, j, (a+b == c)?"true":"false");
+        }
+    } 
+    return 0;
+}
+\end{lstlisting}
+
+La sortie affichée contient, entre autres, les résultats suivants :
+\begin{multicols}{2}
+    \begin{itemize}
+        \item[$\bullet$] (1, 4) : true
+        \item[$\bullet$] (1, 5) : true
+        \item[$\bullet$] (1, 6) : false
+        \item[$\bullet$] (1, 7) : true
+        \item[$\bullet$] (1, 8) : false
+        
+        \item[$\bullet$] (3, 4) : false
+        \item[$\bullet$] (3, 5) : true
+        \item[$\bullet$] (3, 6) : false
+        \item[$\bullet$] (3, 7) : true
+        \item[$\bullet$] (3, 8) : true
+    \end{itemize}    
+\end{multicols}
+
+b. On modifie seulement la ligne d'affichage dans le code\footnote{Comme un \texttt{int} est codé sur 4 octets, on donne 16 caractères à chaque affichage.} :
+\begin{lstlisting}[style=CStyle]
+printf("%.16f + %.16f = %.16f\n", a, b, c);
+\end{lstlisting}
+On donne seulement les résultats pour les 5 premiers couples ci-dessus :
+\begin{lstlisting}[style=CStyle]
+0.1000000014901161 + 0.4000000059604645 = 0.5000000000000000
+0.1000000014901161 + 0.5000000000000000 = 0.6000000238418579
+0.1000000014901161 + 0.6000000238418579 = 0.6999999880790710
+0.1000000014901161 + 0.6999999880790710 = 0.8000000119209290
+0.1000000014901161 + 0.8000000119209290 = 0.8999999761581421
+\end{lstlisting}
+
+c. On remarque que pour une addition, l'égalité \texttt{a+b==c} est vérifiée lorsque \texttt{a} et \texttt{b} sont représentables, ou quand l'un des deux seulement l'est. Dans le second cas, l'erreur de représentation n'a pas eu d'impact sur le résultat puisque c'est la seule erreur du calcul. Ainsi l'égalité reste vraie.\\
+En revanche, dès que les deux flottants ne sont pas représentables, les erreurs s'accumulent et alors la représentation de \texttt{c} peut différer de la valeur de \texttt{a+b}.\\
+
+Dans un cas général si on prend $x, y \in \mathbb{R}$ tels que $x=y$, on aura \texttt{x==y} quand $x$ et $y$ sont représentables sur un nombre de bits donné. Dans les autres cas, il est possible d'obtenir un résultat correct mais cela résulte plutôt du hasard.\\
+
+d. On modifie la fonction précédente :
+\begin{lstlisting}[style=CStyle]
+int main() {
+    for (int i = 0; i<10; i++){
+        for (int j = 0; j < 10; j++){
+            float a = i/10.0, b = j/10.0, c = (i+j)/10.0;
+            if(a+b!=c){
+                int m1 = a+b>c;
+                int m2 = a+b+.000001>c+.000001;
+                printf("(%d, %d) : %d %d\n", i, j, m1, m2);
+            }
+        }
+    } 
+    return 0;
+}
+\end{lstlisting}
+
+On obtient la sortie suivante :
+\begin{lstlisting}[style=CStyle]
+// a+b > c is tested before and after adding 1e-6
+(1, 6) : 1 1
+(1, 8) : 1 1
+(3, 4) : 1 1
+(3, 6) : 1 1
+(4, 3) : 1 1
+(6, 1) : 1 1
+(6, 3) : 1 1
+(6, 8) : 1 1
+(7, 9) : 0 0
+(8, 1) : 1 1
+(8, 6) : 1 1
+(9, 7) : 0 0
+\end{lstlisting}
+On constate que l'ordre est conservé à chaque fois. Comme $10^{-6}$ n'est pas représentable sur 16 bits ($10^{-6} \approx 2^{-20}$), on simule l'effet de la propagation d'une erreur.\\
+On en déduit que des erreurs successives d'arrondi ne bousculent pas l'ordre sur des valeurs arrondies. Toutefois ici on effectue le même calcul des deux côtés. On peut donc toujours les comparer\footnote{Pas l'égalité.}, même après plusieurs calculs, puisque l'ordre est conservé. On peut également penser que cela ne provoquera pas d'évolution chaotique ou aléatoire de ces valeurs dans les calculs. En revanche, pour une suite d'opérations inconnue, cela risque de devenir insignifiant de vouloir comparer deux flottants.
+
+\subsection{Exercice 12}
+On note $s_1 = \displaystyle{\sum_{i=1}^{k} \frac{1}{i}}$ et $s_2 = \displaystyle{\sum_{i=k}^{1} \frac{1}{i}}$.\\
+On écrit la fonction suivante :
+
+\begin{lstlisting}[style=CStyle]
+int main() {
+    float s1 = 0.0, s2 = 0.0;
+    long k = 1000000000;
+    for (double i = 1; i<k+1; i++){
+        s1 += 1/i;
+        s2 += 1/(k+1-i);
+    }
+    printf("k=%ld\n    s1 = %.16f\n    s2 = %.16f\n", k, s1, s2);
+    return 0;
+}
+\end{lstlisting}
+
+Les résultats sont les suivants :
+\begin{lstlisting}[style=CStyle]
+k=1000
+    s1 = 7.4854784011840820
+    s2 = 7.4854717254638672
+k=1000000
+    s1 = 14.3573579788208008
+    s2 = 14.3926515579223633
+k=1000000000
+    s1 = 15.4036827087402344
+    s2 = 18.8079185485839844
+\end{lstlisting}
+On constate que les résultats diffèrent\footnote{Même plus que ça, on dirait que la série converge ! On connait l'équivalent pour la série harmonique : $H_n \underset{n \to +\infty}{\sim} \gamma + \ln(n)$ où $\gamma \approx 0.5$ est la constante d'Euler. Pour $n = 10^9$, on devrait donc plutôt être autour de $H_n \approx 21$.} d'autant plus que le nombre d'erreurs successives est grand, ce qui n'est pas étonnant. Là où le résultat interpelle, c'est que l'ordre de parcours de la somme a un impact conséquent sur le résultat. 
 \end{document}
