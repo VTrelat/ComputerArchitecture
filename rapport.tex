@@ -5,9 +5,35 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
-\usepackage{listings}
 \usepackage[ruled,vlined, linesnumbered]{algorithm2e}
+\usepackage{xcolor}
+\usepackage{listings}
 
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{mPurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,     
+    frame=single,    
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
 %__________________________________________
 
 \hypersetup{
@@ -56,5 +82,45 @@
 Avec la convention $0 \leftrightarrow \texttt{faux}$ et $1 \leftrightarrow \texttt{vrai}$, $0 \wedge 1 = \texttt{faux}$.
 
 \subsection{Exercice 2}
+On donne la table de $c_0$ :
+\begin{center}
+    $c_0 \colon$
+    \begin{tabular}{||c | c | c ||} 
+     \hline
+     $a_0 \backslash b_0$ & 0 & 1 \\ [0.5ex] 
+     \hline\hline
+     0 & 0 & 1  \\ 
+     \hline
+     1 & 1 & 0 \\
+     \hline
+    \end{tabular}
+\end{center}
+On peut interpréter cette table comme la table de vérité du "ou exclusif", le \textit{xor}. Ainsi, $c_0$ coincide avec $a_0 \oplus b_0 = (a_0 \vee b_0) \wedge (\neg (a_0 \wedge b_0))$.
 
+\subsection{Exercice 3}
+a. Montrer que xor est associatif et commutatif puis recopier calcul\\
+
+b. inclure schéma
+
+\section{Exercice 4}
+a. On écrit le code suivant :
+\begin{lstlisting}[style=CStyle]
+#include <stdio.h>
+
+int main(){
+    printf("Sizeof int: %lu octets\n", sizeof(int));
+    printf("Sizeof short: %lu octets\n", sizeof(short));
+    printf("Sizeof char: %lu octets\n", sizeof(char));
+    return 0;
+    }
+\end{lstlisting}
+
+La sortie est la suivante :
+\begin{lstlisting}[frame = single]
+Sizeof int: 4 octets
+Sizeof short: 2 octets
+Sizeof char: 1 octets
+\end{lstlisting}
+
+b. 
 \end{document}
