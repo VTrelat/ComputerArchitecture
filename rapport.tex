@@ -378,4 +378,43 @@ k=1000000000
     s2 = 18.8079185485839844
 \end{lstlisting}
 On constate que les résultats diffèrent\footnote{Même plus que ça, on dirait que la série converge ! On connait l'équivalent pour la série harmonique : $H_n \underset{n \to +\infty}{\sim} \gamma + \ln(n)$ où $\gamma \approx 0.5$ est la constante d'Euler. Pour $n = 10^9$, on devrait donc plutôt être autour de $H_n \approx 21$.} d'autant plus que le nombre d'erreurs successives est grand, ce qui n'est pas étonnant. Là où le résultat interpelle, c'est que l'ordre de parcours de la somme a un impact conséquent sur le résultat.
+
+\subsection{Exercice 13}
+a. La taille d'un \texttt{float} en C est de 4 \textit{bytes}, soit 32 bits :
+\begin{itemize}
+    \item[$\bullet$] 1 bit de signe
+    \item[$\bullet$] 8 bits d'exposant
+    \item[$\bullet$] 23 bits de mantisse
+\end{itemize}
+
+b. Convertissons d'abord \texttt{0x414BD000} en binaire :
+\begin{equation*}
+    414BD000_{16} = 01000001010010111101000000000000_2
+\end{equation*}
+On identifie ensuite les bits de signe, d'exposant et de mantisse :
+\begin{equation*}
+    \underset{S}{\underbrace{0}}~\underset{E=130}{\underbrace{10000010}}~\underset{T}{\underbrace{10010111101000000000000}}
+\end{equation*}
+Le biais $b$ valant 127, notre exposant ici vaut $E-b = 3$. Donc, en "écriture binaire à virgule", on obtient :
+\begin{equation*}
+    1.10010111101 \times 2^3 = \underset{=12}{\underbrace{1100}}.\underset{=0.73828125}{\underbrace{10111101}}
+\end{equation*}
+Soit finalement :
+\begin{center}
+    \texttt{0x414BD000}$_{16}$ encode $12.73828125$
+\end{center}
+
+c. En suivant le raisonnement inverse, on peut trouver l'exposant et la mantisse de l'encodage de 0.1. On commence par l'écrire en "binaire à virgule" :
+\begin{equation*}
+    0.1 = 000110011001100110011001101_2
+\end{equation*}
+On décale la virgule pour trouver l'exposant :
+\begin{equation*}
+    0.1 = 1.10011001100110011001101_2 \times 2^{-4}
+\end{equation*}
+Cela donne donc un exposant de $E = b - 4 = 123 = 01111011_2$ sur 8 bits. Enfin, $0.1 > 0$ donc on met un premier bit à 0. On obtient donc l'encodage suivant -- dont on donne également la valeur décimale réelle -- pour le nombre 0.1 :
+\begin{equation*}
+    \underset{\text{signe}}{\underbrace{0}}\underset{\text{exposant}}{\underbrace{01111011}}\underset{\text{mantisse}}{\underbrace{10011001100110011001101_2}} = 0.100000001490116119384765625
+\end{equation*}
+
 \end{document}
