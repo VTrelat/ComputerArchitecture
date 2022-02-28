@@ -310,7 +310,7 @@ On donne seulement les résultats pour les 5 premiers couples ci-dessus :
 c. On remarque que pour une addition, l'égalité \texttt{a+b==c} est vérifiée lorsque \texttt{a} et \texttt{b} sont représentables, ou quand l'un des deux seulement l'est. Dans le second cas, l'erreur de représentation n'a pas eu d'impact sur le résultat puisque c'est la seule erreur du calcul. Ainsi l'égalité reste vraie.\\
 En revanche, dès que les deux flottants ne sont pas représentables, les erreurs s'accumulent et alors la représentation de \texttt{c} peut différer de la valeur de \texttt{a+b}.\\
 
-Dans un cas général si on prend $x, y \in \mathbb{R}$ tels que $x=y$, on aura \texttt{x==y} quand $x$ et $y$ sont représentables sur un nombre de bits donné. Dans les autres cas, il est possible d'obtenir un résultat correct mais cela résulte plutôt du hasard.\\
+Dans un cas général si on prend $x, y \in \mathbb{R}$ tels que $x=y$, on aura \texttt{x==y} quand $x$ et $y$ sont représentables sur un nombre de bits donné\footnote{Il faut tout de même faire attention à la précision. Augmenter la précision ne rendra pas les calculs exacts pour autant.}. Dans les autres cas, il est possible d'obtenir un résultat correct mais cela résulte plutôt du hasard.\\
 
 d. On modifie la fonction précédente :
 \begin{lstlisting}[style=CStyle]
@@ -377,7 +377,8 @@ k=1000000000
     s1 = 15.4036827087402344
     s2 = 18.8079185485839844
 \end{lstlisting}
-On constate que les résultats diffèrent\footnote{Même plus que ça, on dirait que la série converge ! On connait l'équivalent pour la série harmonique : $H_n \underset{n \to +\infty}{\sim} \gamma + \ln(n)$ où $\gamma \approx 0.5$ est la constante d'Euler. Pour $n = 10^9$, on devrait donc plutôt être autour de $H_n \approx 21$.} d'autant plus que le nombre d'erreurs successives est grand, ce qui n'est pas étonnant. Là où le résultat interpelle, c'est que l'ordre de parcours de la somme a un impact conséquent sur le résultat.
+On constate que les résultats diffèrent\footnote{Même plus que ça, on dirait que la série converge ! On connait l'équivalent pour la série harmonique : $H_n \underset{n \to +\infty}{\sim} \gamma + \ln(n)$ où $\gamma \approx 0.5$ est la constante d'Euler. Pour $n = 10^9$, on devrait donc plutôt être autour de $H_n \approx 21$.} d'autant plus que le nombre d'erreurs successives est grand, ce qui n'est pas étonnant. Là où le résultat interpelle, c'est que l'ordre de parcours de la somme a un impact conséquent sur le résultat.\\
+Cette erreur est due au fait que lorsque le parcours est décroissant, on finit pas les petits nombres. Ces derniers causent alors des erreurs d'arrondi car leur ordre de grandeur est faible par rapport aux premiers nombres.
 
 \subsection{Exercice 13}
 a. La taille d'un \texttt{float} en C est de 4 \textit{bytes}, soit 32 bits :
@@ -416,5 +417,63 @@ Cela donne donc un exposant de $E = b - 4 = 123 = 01111011_2$ sur 8 bits. Enfin,
 \begin{equation*}
     \underset{\text{signe}}{\underbrace{0}}\underset{\text{exposant}}{\underbrace{01111011}}\underset{\text{mantisse}}{\underbrace{10011001100110011001101_2}} = 0.100000001490116119384765625
 \end{equation*}
+
+\section{Chapitre 2}
+\subsection{Exercice 1}
+a. Lorsqu'on crée par exemple un tableau de taille un milliard, on obtient une erreur similaire à la suivante :
+\begin{lstlisting}[style=CStyle]
+[1]    54133 segmentation fault  ./a.out
+\end{lstlisting}
+b. En expérimentant à la main, on trouve qu'on peut créer un tableau de taille maximale 2 096 286.
+
+\subsection{Exercice 2}
+On vérifie par exemple qu'on peut créer un tableau de taille un milliard.
+
+\subsection{Exercice 3}
+La machine utilisée pour ce TD utilise la convention \textit{little endian}.
+
+\subsection{Exercice 4}
+On écrit déjà le code suivant :
+\begin{lstlisting}[style=CStyle]
+#include <stdio.h>
+#include <x86intrin.h>
+
+unsigned long int squareSum(int n){
+        unsigned long int tic,toc;
+        unsigned int ui;
+        int a = 0;
+        tic = __rdtscp(&ui);
+        for (int i=0; i < n; ++i){
+            a = a*a+a*a;
+        }
+        toc = __rdtscp(&ui);
+        return toc-tic;
+    }
+
+int main(){
+    printf("n=%d: %lu tics\n", 1000, squareSum(1000));
+    printf("n=%d: %lu tics\n", 10000, squareSum(10000));
+    printf("n=%d: %lu tics\n", 1000000, squareSum(1000000));
+    printf("n=%d: %lu tics\n", 10000000, squareSum(10000000));
+    printf("n=%d: %lu tics\n", 100000000, squareSum(100000000));
+    return 0;
+}
+\end{lstlisting}
+On obtient les résultats suivants:
+\begin{center}
+    \begin{tabular}{| c || c | c | c | c | c |}
+        \hline
+    $n$ & $10^3$ & $10^4$ & $10^6$ & $10^7$ & $10^8$ \\
+        \hline
+    mesure & 7956 & 75350 & 7681712 & 70013740 & 534394538\\ 
+     \hline
+    \end{tabular}
+\end{center}
+On note qu'on semble bien obtenir une relation qui a l'air linéaire, hormis la dernière mesure.
+
+\subsection{Exercice 5}
+\subsection{Exercice 6}
+\subsection{Exercice 7}
+\subsection{Exercice 8}
 
 \end{document}
