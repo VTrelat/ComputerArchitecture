@@ -491,8 +491,62 @@ On obtient les résultats suivants:
 \end{center}
 
 \subsection{Exercice 6}
-a. On teste la fonction avec la fonction \texttt{test} calculant la somme des premiers carrés. On obtient des résultats cohérents (croissance linéaire). La fonction \texttt{print\_timing} comprend une amorce qui exécute 5 fois la fonction à tester et moyenne les mesures sur 100 appels.
+a. On teste la fonction avec la fonction \texttt{test} calculant la somme des premiers carrés. On obtient des résultats cohérents (croissance linéaire). La fonction \texttt{print\_timing} comprend une amorce qui exécute 10 fois la fonction à tester et moyenne les mesures sur 100 appels.
+
+b. Voici la fonction \texttt{print\_timing}:
+
+\begin{lstlisting}[style=CStyle]
+void print_timing(int arg, void (*func)(int), int nb_boot, int nb_call)
+{
+    // boot up
+    for (int i = 0; i < nb_boot; i++)
+    {
+        func(arg);
+    }
+
+    // measure
+    unsigned long int tic, toc;
+    unsigned int ui;
+    tic = __rdtscp(&ui);
+    for (int i = 0; i < nb_call; i++)
+    {
+        func(arg);
+    }
+    toc = __rdtscp(&ui);
+
+    printf("average time : %lu\n", (toc - tic) / n);
+}
+\end{lstlisting}
+
+c. Oui.
+
+d. On obtient les résultats suivants:
+
+\begin{center}
+    \begin{tabular}{| c | c | c | c | c | c |}
+        \hline
+    appel$\backslash n$ & $10^3$ & $10^5$ & $10^7$ & $10^8$ & $10^9$ \\
+        \hline
+        mesure \texttt{print\_timing} & 4214 & 432308 & 31686176 & 308206789 & 3176004203\\ 
+        \hline
+    \end{tabular}
+\end{center}
+
 \subsection{Exercice 7}
+On obtient les résultats suivants (arrondis):
+\begin{center}
+    \begin{tabular}{| c | c | c | c | c | c | c | c |}
+        \hline
+        pas & $1$ & $2$ & $3$ & $4$ & $8$ & $16$ & $32$ \\
+        \hline
+        mesure ($10^6$ tics)& 59 & 61 & 63 & 66 & 83 & 102 & 197 \\ 
+        \hline
+    \end{tabular}
+\end{center}
+
+% tracer la courbe avec 1000
+
 \subsection{Exercice 8}
 
+% faire ex8 chap 3 en plus
 \end{document}
