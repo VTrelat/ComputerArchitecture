@@ -10,6 +10,7 @@
 \usepackage{listings}
 \usepackage{multicol}
 \usepackage{circuitikz}
+
 \usetikzlibrary{babel}
 \usetikzlibrary{backgrounds}
 
@@ -465,13 +466,30 @@ On obtient les résultats suivants:
         \hline
     $n$ & $10^3$ & $10^4$ & $10^6$ & $10^7$ & $10^8$ \\
         \hline
-    mesure & 7956 & 75350 & 7681712 & 70013740 & 534394538\\ 
+    mesure & 3310 & 42456 & 7134866 & 67719612 & 637584056\\ 
      \hline
     \end{tabular}
 \end{center}
 On note qu'on semble bien obtenir une relation qui a l'air linéaire, hormis la dernière mesure.
 
 \subsection{Exercice 5}
+On obtient les résultats suivants:
+\begin{center}
+    \begin{tabular}{| c | c | c | c | c | c |}
+        \hline
+    appel$\backslash n$ & $10^3$ & $10^5$ & $10^7$ & $10^8$ & $10^9$ \\
+        \hline
+        1er & 9108 & 835910 & 52244848 & 532734614 & 5350923602\\ 
+        \hline
+        2ème & 3238 & 685744 & 31633110 & 317468584 & 3161147144\\ 
+        \hline
+        3ème & 3088 & 322012 & 32683670 & 341747932 & 3100426690\\ 
+        \hline
+    $\frac{\text{écart max.}}{\text{moyenne}}$ en \% & 117 & 83 & 53 & 53 & 58\\ 
+     \hline
+    \end{tabular}
+\end{center}
+
 \subsection{Exercice 6}
 \subsection{Exercice 7}
 \subsection{Exercice 8}

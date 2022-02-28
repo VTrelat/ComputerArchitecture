@@ -9,7 +9,7 @@ unsigned long int squareSum(int n)
     tic = __rdtscp(&ui);
     for (int i = 0; i < n; ++i)
     {
-        a = a * a + a * a;
+        a = i * i;
     }
     toc = __rdtscp(&ui);
     return toc - tic;
