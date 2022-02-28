@@ -4,8 +4,8 @@
 void espacement(int *tab, int pas)
 {
     int tmp;
-    register unsigned int i = 0;
-    register unsigned long int bound = pas * 10000000;
+    register unsigned long int i = 0;
+    register unsigned long int bound = pas * (unsigned long int)10000000;
     while (i < bound)
     {
         tmp = tab[i % 1000000000];
@@ -32,16 +32,17 @@ void print_timing(int *arg1, int arg2, void (*func)(int *, int), int nb_boot, in
     }
 
     toc = __rdtscp(&ui);
-    printf("average time : %lu\n", (toc - tic) / nb_call);
+    printf("%lu\n", (toc - tic) / nb_call);
 }
 
 int main()
 {
     int *tab = malloc(1000000000 * sizeof(int));
-    for (unsigned long int i = 0; i < 1001; i += 50)
+    printf("i t\n");
+    for (int i = 0; i < 1001; i += 20)
     {
-        printf("[i=%lu]\n", i);
-        print_timing(tab, i, espacement, 5, 10);
+        printf("%d ", i);
+        print_timing(tab, i, espacement, 2, 3);
     }
     return 0;
 }

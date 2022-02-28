@@ -10,6 +10,7 @@
 \usepackage{listings}
 \usepackage{multicol}
 \usepackage{circuitikz}
+\usepackage{pgfplots}
 
 \usetikzlibrary{babel}
 \usetikzlibrary{backgrounds}
@@ -49,7 +50,6 @@
     linkcolor=blue,
     citecolor=blue
 }
-
 
 \begin{document}
 \begin{titlepage}
@@ -521,7 +521,6 @@ void print_timing(int arg, void (*func)(int), int nb_boot, int nb_call)
 c. Oui.
 
 d. On obtient les résultats suivants:
-
 \begin{center}
     \begin{tabular}{| c | c | c | c | c | c |}
         \hline
@@ -539,12 +538,43 @@ On obtient les résultats suivants (arrondis):
         \hline
         pas & $1$ & $2$ & $3$ & $4$ & $8$ & $16$ & $32$ \\
         \hline
-        mesure ($10^6$ tics)& 59 & 61 & 63 & 66 & 83 & 102 & 197 \\ 
+        mesure ($\times 10^6$ tics)& 59 & 61 & 63 & 66 & 83 & 102 & 197 \\ 
         \hline
     \end{tabular}
 \end{center}
 
-% tracer la courbe avec 1000
+On peut ainsi tracer les résultats obtenus pour les pas situés entre 1 et 1000:
+\begin{center}
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=\textwidth,
+            height=7cm,
+            legend pos = south east,
+            xlabel=step,
+            ylabel=tics]
+        \addplot[
+            domain = 60:1000,
+            samples = 20,
+            smooth,
+            thin,
+            dashed,
+            green!60!black,
+        ] {600000000*(1-exp(-x/130))};
+        \addplot[
+            semithick,
+            blue,
+        ] file[skip first] {c/ch2/ex7.dat};
+        \legend{
+            Model,
+            Measures, 
+        }
+        \end{axis}
+    \end{tikzpicture}
+\end{center}
+On remarque que les temps d'accès semblent converger\footnote{Plus précisément -- car on sait qu'il est impossible que cela converge -- on semble observer une croissance logarithmique.} ! Pour mieux l'illustrer, on trace par dessus les mesures la fonction suivante (en vert sur le graphique):
+\begin{equation*}
+    x \mapsto 6\times 10^8 (1-e^{-\frac{x}{130}})
+\end{equation*}
 
 \subsection{Exercice 8}
 
