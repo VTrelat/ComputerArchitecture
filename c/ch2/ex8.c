@@ -12,7 +12,6 @@ void print_timing(int *arg1, unsigned long int *arg2, unsigned long int arg3, vo
     // amorçage
     for (int i = 0; i < nb_boot; i++)
     {
-        printf("boot up %d/%d\n", i + 1, nb_boot);
         func(arg1, arg2, arg3);
     }
 
@@ -22,7 +21,6 @@ void print_timing(int *arg1, unsigned long int *arg2, unsigned long int arg3, vo
     tic = __rdtscp(&ui);
     for (int i = 0; i < nb_call; i++)
     {
-        printf("call %d/%d\n", i + 1, nb_call);
         func(arg1, arg2, arg3);
     }
     toc = __rdtscp(&ui);
@@ -83,14 +81,14 @@ int main()
 
     int *tab = malloc(1000000000 * sizeof(int));
     printf("i t (seq)\n");
-    for (unsigned long int i = 100000000; i <= 1000000000; i *= 10)
+    for (unsigned long int i = 1000; i <= 1000000000; i *= 10)
     {
         unsigned long int *auxOrdered = makeOrderedTab(i);
         printf("%lu ", i);
         print_timing(tab, auxOrdered, i, access_aux, 5, 10);
     }
     printf("i t (rand)\n");
-    for (unsigned long int i = 100000000; i <= 1000000000; i *= 10)
+    for (unsigned long int i = 1000; i <= 1000000000; i *= 10)
     {
         unsigned long int *auxRand = makeRandTab(i);
         printf("%lu ", i);

@@ -11,6 +11,8 @@
 \usepackage{multicol}
 \usepackage{circuitikz}
 \usepackage{pgfplots}
+\usepackage{framed}
+
 
 \usetikzlibrary{babel}
 \usetikzlibrary{backgrounds}
@@ -666,13 +668,23 @@ On obtient les courbes suivantes:
         \end{axis}
     \end{tikzpicture}
 \end{center}
-
 Passons rapidement sur l'étude de ces courbes.\\
 \textbf{Accès séquentiel}: on peut définir la fontion
 \begin{equation*}
-    t_{\text{seq}} \colon n \mapsto \xi_\text{seq} n
+    t_{\text{seq}} \colon n \mapsto \tau_\text{seq} n
 \end{equation*}
+donnant une estimation temps mis pour réaliser des accès séquentiels en mémoire, où $\tau_\text{seq} \approx 4.298$. Le temps d'un accès séquentiel en mémoire, \textit{i.e.} sur des cases mémoires successives, est donc d'environ 4 \textit{tics}\footnote{Le temps de la mesure augmente linéairement avec le nombre d'accès mémoire. En moyennant, on obtient bien un temps constant par mesure.}. C'est très rapide !\\
 
-On constate ainsi que le temps mis pour faire un accès mémoire séquentiel ou aléatoire est constant!\footnote{On a obtenu plus haut que le temps de la mesure augmente linéairement avec le nombre d'accès mémoire. En moyennant, on obtient bien un temps constant par mesure.}
-% faire ex8 chap 3 en plus
+\noindent
+\textbf{Accès aléatoire}: on peut de même définir la fontion
+\begin{equation*}
+    t_{\text{rand}} \colon n \mapsto \tau_\text{rand} n
+\end{equation*}
+où $\tau_\text{rand} \approx 101.9$. Ainsi, un accès aléatoire dans la mémoire prendra environ 102 \textit{tics}. C'est approximativement 20 fois plus long que pour un accès séquentiel, toutefois cela reste du temps constant ! La différence s'explique par le fait que pour "sauter" d'une position à une autre, le pointeur qui fait office de tête de lecture doit faire un calcul arithmétique pour déterminer l'adresse mémoire de la case sur laquelle il doit se rendre. Cela peut nécessiter une soustraction, par exemple, ou encore un modulo, qui est tout de même assez coûteux (quelques dizaines de \textit{tics}).\\
+
+\begin{framed}
+    \textbf{Conclusion} :
+    On constate ainsi que le temps mis pour faire un accès mémoire est constant, peu importe que l'accès soit séquentiel ou aléatoire. On comprend donc l'intérêt du modèle RAM (\textit{Random Acess Memory}) qui permet d'avoir cette propriété tout à fait indispensable aujourd'hui, puisqu'on fait en majorité des appels aléatoires.On peut donc accéder (quasi) instantanément à des données éparpillées en mémoire, ce qui se révèle notamment utile lorsqu'on sollicite plusieurs programmes en même temps.
+\end{framed}
+
 \end{document}
