@@ -578,5 +578,101 @@ On remarque que les temps d'accès semblent converger\footnote{Plus précisémen
 
 \subsection{Exercice 8}
 
+a. On écrit d'abord les deux fonctions suivantes\footnote{Il faut inclure les bibliothèques \texttt{stdlib} et \texttt{time} au début du code, et initialiser le \textit{seed} avec \texttt{srand(unsigned int)time(NULL)}.} :
+\begin{lstlisting}[style=CStyle]
+void access_seq(int *tab, int n)
+{
+    int tmp;
+    for (int i = 0; i < n; i++)
+    {
+        tmp = tab[i];
+    }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[style=CStyle]
+void access_rand(int *tab, int n)
+{
+    int tmp;
+    for (int i = 0; i < n; i++)
+    {
+        tmp = tab[(unsigned long int)rand() % 1000000000];
+    }
+}
+\end{lstlisting}
+On obtient les temps suivants:
+\begin{center}
+    \begin{tabular}{| c | c | c | c | c | c |}
+        \hline
+    $n$ & $10^3$ & $10^6$ & $10^7$ & $10^8$ & $10^9$ \\
+        \hline
+        \hline
+        \texttt{access\_seq} & 5111 & 5316032 & 44992606 & 450441905 & 4609590108\\ 
+        \hline
+        \texttt{access\_rand} & 3855618 & 139739559 & 1386369206 & 14181946914 & 148526968620 \\ 
+        \hline
+    \end{tabular}
+\end{center}
+
+b. On constate que la fonction \texttt{access\_rand} est (très largement, d'un facteur 30 environ) plus lente que la fonction \texttt{access\_seq} ! Est-ce réellement le cas ? Pour l'instant, on ne peut pas répondre à cette question, toutefois on peut facilement se rendre compte qu'on mesure bien trop de choses. En effet, à chaque accès aléatoire, on appelle -- donc on mesure -- la fonction \texttt{rand}, qui prend visiblement un temps non négligeable.
+
+
+c. On modifie légèrement les fonctions de mesure\footnote{Tous les codes sont disponibles sur \href{https://github.com/VTrelat/ComputerArchitecture/tree/main/c}{GitHub}. Attention toutefois, l'exécution du code correspondant à cette mesure peut prendre plusieurs dizaines de minutes et nécessite au moins 32Go voire 64 Go de RAM.} et on écrit la fonction suivante :
+\begin{lstlisting}[style=CStyle]
+void access_aux(int *tab, unsigned long int *aux, unsigned long int n)
+{
+    int tmp;
+    for (register unsigned long int i = 0; i < n; i++)
+    {
+        tmp = tab[aux[i]];
+    }
+}
+\end{lstlisting}
+On obtient les temps suivants:
+\begin{center}
+    \begin{tabular}{| c | c | c | c | c | c |}
+        \hline
+    $n$ & $10^3$ & $10^6$ & $10^7$ & $10^8$ & $10^9$ \\
+        \hline
+        \hline
+        \texttt{access\_seq} & 4298 & 4263336 & 42850857 & 444757816 & 4356153500 \\
+        \hline
+        \texttt{access\_rand} & 3463 & 8848371 & 377748557 & 5385496993 & 97091291039 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+On obtient les courbes suivantes:
+\begin{center}
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=\textwidth,
+            height=6cm,
+            legend pos = north west,
+            xlabel=size,
+            ylabel=tics]
+        \addplot[
+            semithick,
+            blue,
+        ] file[skip first] {c/ch2/ex8_1.dat};
+        \addplot[
+            semithick,
+            red,
+        ] file[skip first] {c/ch2/ex8_2.dat};
+        \legend{
+            Sequential, 
+            Random,
+        }
+        \end{axis}
+    \end{tikzpicture}
+\end{center}
+
+Passons rapidement sur l'étude de ces courbes.\\
+\textbf{Accès séquentiel}: on peut définir la fontion
+\begin{equation*}
+    t_{\text{seq}} \colon n \mapsto \xi_\text{seq} n
+\end{equation*}
+
+On constate ainsi que le temps mis pour faire un accès mémoire séquentiel ou aléatoire est constant!\footnote{On a obtenu plus haut que le temps de la mesure augmente linéairement avec le nombre d'accès mémoire. En moyennant, on obtient bien un temps constant par mesure.}
 % faire ex8 chap 3 en plus
 \end{document}
