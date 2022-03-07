@@ -683,14 +683,12 @@ donnant une estimation temps mis pour réaliser des accès séquentiels en mémo
 \begin{equation*}
     t_{\text{rand}} \colon n \mapsto \tau_\text{rand} n
 \end{equation*}
-où $\tau_\text{rand} \approx 101.9$. Ainsi, un accès aléatoire dans la mémoire prendra environ 102 \textit{tics}. C'est approximativement 20 fois plus long que pour un accès séquentiel, toutefois cela reste du temps constant ! La différence s'explique par le fait que pour "sauter" d'une position à une autre, le pointeur qui fait office de tête de lecture doit faire un calcul arithmétique pour déterminer l'adresse mémoire de la case sur laquelle il doit se rendre. Cela peut nécessiter une soustraction, par exemple, ou encore un modulo, qui est tout de même assez coûteux (quelques dizaines de \textit{tics}).
+où $\tau_\text{rand} \approx 101.9$. Ainsi, un accès aléatoire dans la mémoire prendra environ 102 \textit{tics}. C'est approximativement 20 fois plus long que pour un accès séquentiel, toutefois cela reste du temps constant ! La différence peut déjà s'expliquer par le fait que pour "sauter" d'une position à une autre, le pointeur qui fait office de tête de lecture doit faire un calcul arithmétique pour déterminer l'adresse mémoire de la case sur laquelle il doit se rendre. Cela peut nécessiter une soustraction, par exemple, ou encore un modulo, qui est tout de même assez coûteux (quelques dizaines de \textit{tics}).
 
 \begin{framed}
     \textbf{Conclusion} :
-    On constate ainsi que le temps mis pour faire un accès mémoire est constant, peu importe que l'accès soit séquentiel ou aléatoire. On comprend donc l'intérêt du modèle RAM (\textit{Random Acess Memory}) qui permet d'avoir cette propriété tout à fait indispensable aujourd'hui, puisqu'on fait en majorité des appels aléatoires.On peut donc accéder (quasi) instantanément à des données éparpillées en mémoire, ce qui se révèle notamment utile lorsqu'on sollicite plusieurs programmes en même temps.
+    Néanmoins, la vraie différence vient d'un autre phénomène qui est la mise en cache de données\footnote{cf Chapitre 3}. Lorsqu'on fait des accès séquentiel, on charge des blocs en cache, et on fait une suite d'accès en cache, ce qui est rapide. Lorsqu'on fait une suite d'accès aléatoires, on fait des accès hors-cache presque à chaque nouvel accès, puisque la probabilité que deux accès consécutifs concernent des données présentes dans un même bloc est beaucoup plus faible.
 \end{framed}
-
-% Interprétation à revoir
 
 \pagebreak
 
@@ -718,6 +716,7 @@ b. On commence par lire le noeud 1, qui charge -- c'est donc un accès hors-cach
 Pour résumer, sur les 27 accès, les accès hors-cache sont : 1, 2, 3, 4, 5, 6, 7 et 16.
 
 \subsection{Exercice 3}
+On obtient les résultats suivants\footnote{Sous Mac, on peut accéder à ce genre d'informations par la commande \texttt{sysctl}. En particulier, ici on peut utiliser la commande \texttt{sysctl -a | grep hw}.}:
 \begin{center}
     \begin{tabular}{| c || c | c | c | c |}
         \hline
@@ -731,5 +730,48 @@ Pour résumer, sur les 27 accès, les accès hors-cache sont : 1, 2, 3, 4, 5, 6,
         \hline
     \end{tabular}
 \end{center}
+
+\begin{center}
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=\textwidth,
+            height=6cm,
+            legend pos = north west,
+            xlabel=$N$,
+            ylabel=tics]
+        \addplot[
+            semithick,
+            blue,
+        ] file[skip first] {../c/ch3/ex4a};
+        \addplot[
+            semithick,
+            red,
+        ] file[skip first] {../c/ch3/ex4b};
+        \legend{
+            Lines, 
+            Columns,
+        }
+        \end{axis}
+    \end{tikzpicture}
+\end{center}
+
+
+% Ex 6 : cache 32 ko = 32 * 2**10
+% 64 o * 2 = 128 o par sous-cache
+% 32*2^10 / 2^7 = 256 sous-cache
+
+% 2 octets séparés d'un multiple de 32768 en mémoire seront dans le même sous-cache
+
+% cf ex2 : le bloc contenant 1 et le bloc contenant 11 sont dans le même sous-cache
+%         3 et 27
+%         20
+%         26 et 21
+%         22
+
+% Corriger le sujet : si on a 1 ko de cache -> contient 1024 / 64 = 16 blocs et 1024/128 = 8 sous-caches
+%             2, 3, 11 sont dans le même sous-cache
+%             14, 20, 27
+%             26, 22, 4
+% /!\ 9 fait un cache-miss car on a chargé 3 et 5 entre temps.
 
 \end{document}
