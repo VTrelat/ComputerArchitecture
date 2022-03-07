@@ -19,7 +19,7 @@ int f2(int *tab, unsigned long int N)
     return dum;
 }
 
-void print_timing(int *arg1, unsigned long int arg2, int (*func)(int *, unsigned long int), int nb_boot, int nb_call)
+void print_avg_timing(int *arg1, unsigned long int arg2, int (*func)(int *, unsigned long int), int nb_boot, int nb_call)
 {
     // boot
     for (int i = 0; i < nb_boot; i++)
@@ -40,16 +40,6 @@ void print_timing(int *arg1, unsigned long int arg2, int (*func)(int *, unsigned
     printf("%lu\n", (toc - tic) / (arg2 * nb_call));
 }
 
-int *makeOrderedTab(unsigned long int size)
-{
-    int *tab = malloc(size * sizeof(int));
-    for (unsigned long int i = 0; i < size; i++)
-    {
-        tab[i] = i;
-    }
-    return tab;
-}
-
 void access(int *tab, unsigned long int size)
 {
     int s;
@@ -61,24 +51,24 @@ void access(int *tab, unsigned long int size)
 
 int main()
 {
-    int *aux = makeOrderedTab(100000000);
+    int *aux = malloc(100000000 * sizeof(int));
     printf("N t (f1)\n");
-    for (unsigned long int N = 2; N <= 32768; N *= 1.5)
+    for (unsigned long int N = 400; N <= 4000; N += 50)
     {
         int *tab = malloc(N * N * sizeof(int));
         printf("%lu ", N);
-        print_timing(tab, N, f1, 5, 10);
+        print_avg_timing(tab, N, f1, 5, 5);
         free(tab);
         access(aux, 100000000);
     }
     printf("N t (f2)\n");
-    for (unsigned long int N = 2; N <= 32768; N *= 1.5)
+    for (unsigned long int N = 400; N <= 4000; N += 50)
     {
         int *tab = malloc(N * N * sizeof(int));
         printf("%lu ", N);
-        print_timing(tab, N, f1, 5, 10);
+        print_avg_timing(tab, N, f1, 5, 5);
         free(tab);
         access(aux, 100000000);
     }
 }
-// ./a.out >> ex4.txt; rm ex4a ex4b; split -a 1 -p "N" ex4.txt ex4
+// rm ex4.txt; ./a.out >> ex4.txt; rm ex4a ex4b; split -a 1 -p "N" ex4.txt ex4
