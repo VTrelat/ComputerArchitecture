@@ -10,14 +10,14 @@ int code_2(unsigned long int* tab, int N);
 
 int main() {
   //printf("%ld", sizeof(unsigned long int));
-  for (int N=450; N<550; N += 2) {
+  for (int N=300; N<800; N += 2) {
     unsigned long int *tab = malloc(N*N*sizeof(unsigned long int));
     printf("%d\n", N);
     print_timing(tab, N, code_2, 5, 10);
     //print_timing(tab, N, code_2, 5, 10);
     free(tab);
-    unsigned long int *vide_cache = malloc(N*N*sizeof(unsigned long int));
-    code_2(vide_cache,N); //ne marche pas, il faut un tableau de la taille du cache
+    unsigned long int *vide_cache = malloc(32768*sizeof(unsigned long int));
+    code_2(vide_cache,181); //ne marche pas, il faut un tableau de la taille du cache
   }
 
   return 0;
@@ -45,7 +45,7 @@ void print_timing(unsigned long int *arg1, int arg2, int (*func)(unsigned long i
     }
     toc = __rdtscp(&ui);
 
-    printf("average time : %lu\n", (toc - tic) / nb_call);
+    printf("average time : %lu\n", (toc - tic) / (nb_call*arg2));
 }
 
 int code_1(unsigned long int* tab, int N) {
