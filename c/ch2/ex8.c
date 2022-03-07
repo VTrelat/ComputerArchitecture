@@ -86,6 +86,7 @@ int main()
         unsigned long int *auxOrdered = makeOrderedTab(i);
         printf("%lu ", i);
         print_timing(tab, auxOrdered, i, access_aux, 5, 10);
+        free(auxOrdered);
     }
     printf("i t (rand)\n");
     for (unsigned long int i = 1000; i <= 1000000000; i *= 10)
@@ -93,6 +94,7 @@ int main()
         unsigned long int *auxRand = makeRandTab(i);
         printf("%lu ", i);
         print_timing(tab, auxRand, i, access_aux, 0, 2);
+        free(auxRand);
     }
     return 0;
 }

@@ -421,6 +421,8 @@ Cela donne donc un exposant de $E = b - 4 = 123 = 01111011_2$ sur 8 bits. Enfin,
     \underset{\text{signe}}{\underbrace{0}}\underset{\text{exposant}}{\underbrace{01111011}}\underset{\text{mantisse}}{\underbrace{10011001100110011001101_2}} = 0.100000001490116119384765625
 \end{equation*}
 
+\pagebreak
+
 \section{Chapitre 2}
 \subsection{Exercice 1}
 a. Lorsqu'on crée par exemple un tableau de taille un milliard, on obtient une erreur similaire à la suivante :
@@ -442,17 +444,16 @@ On écrit déjà le code suivant :
 #include <x86intrin.h>
 
 unsigned long int squareSum(int n){
-        unsigned long int tic,toc;
-        unsigned int ui;
-        int a = 0;
-        tic = __rdtscp(&ui);
-        for (int i=0; i < n; ++i){
-            a = a*a+a*a;
-        }
-        toc = __rdtscp(&ui);
-        return toc-tic;
+    unsigned long int tic, toc;
+    unsigned int ui;
+    int a = 0;
+    tic = __rdtscp(&ui);
+    for (int i = 0; i < n; ++i){
+        a = i * i;
     }
-
+    toc = __rdtscp(&ui);
+    return toc - tic;
+}
 int main(){
     printf("n=%d: %lu tics\n", 1000, squareSum(1000));
     printf("n=%d: %lu tics\n", 10000, squareSum(10000));
@@ -578,6 +579,8 @@ On remarque que les temps d'accès semblent converger\footnote{Plus précisémen
     x \mapsto 6\times 10^8 (1-e^{-\frac{x}{130}})
 \end{equation*}
 
+% On mesure des temps d'accès dont la proportion d'accès hors-cache augmente
+
 \subsection{Exercice 8}
 
 a. On écrit d'abord les deux fonctions suivantes\footnote{Il faut inclure les bibliothèques \texttt{stdlib} et \texttt{time} au début du code, et initialiser le \textit{seed} avec \texttt{srand(unsigned int)time(NULL)}.} :
@@ -619,7 +622,7 @@ On obtient les temps suivants:
 b. On constate que la fonction \texttt{access\_rand} est (très largement, d'un facteur 30 environ) plus lente que la fonction \texttt{access\_seq} ! Est-ce réellement le cas ? Pour l'instant, on ne peut pas répondre à cette question, toutefois on peut facilement se rendre compte qu'on mesure bien trop de choses. En effet, à chaque accès aléatoire, on appelle -- donc on mesure -- la fonction \texttt{rand}, qui prend visiblement un temps non négligeable.
 
 
-c. On modifie légèrement les fonctions de mesure\footnote{Tous les codes sont disponibles sur \href{https://github.com/VTrelat/ComputerArchitecture/tree/main/c}{GitHub}. Attention toutefois, l'exécution du code correspondant à cette mesure peut prendre plusieurs dizaines de minutes et nécessite au moins 32Go voire 64 Go de RAM.} et on écrit la fonction suivante :
+c. On modifie légèrement les fonctions de mesure\footnote{Tous les codes sont disponibles sur \href{https://github.com/VTrelat/ComputerArchitecture/tree/main/c}{GitHub}. Attention toutefois, l'exécution du code correspondant à cette mesure peut prendre plusieurs dizaines de minutes et nécessite au moins une dizaine de Go de RAM.} et on écrit la fonction suivante :
 \begin{lstlisting}[style=CStyle]
 void access_aux(int *tab, unsigned long int *aux, unsigned long int n)
 {
@@ -649,7 +652,7 @@ On obtient les courbes suivantes:
     \begin{tikzpicture}
         \begin{axis}[
             width=\textwidth,
-            height=6cm,
+            height=5.5cm,
             legend pos = north west,
             xlabel=size,
             ylabel=tics]
@@ -680,11 +683,53 @@ donnant une estimation temps mis pour réaliser des accès séquentiels en mémo
 \begin{equation*}
     t_{\text{rand}} \colon n \mapsto \tau_\text{rand} n
 \end{equation*}
-où $\tau_\text{rand} \approx 101.9$. Ainsi, un accès aléatoire dans la mémoire prendra environ 102 \textit{tics}. C'est approximativement 20 fois plus long que pour un accès séquentiel, toutefois cela reste du temps constant ! La différence s'explique par le fait que pour "sauter" d'une position à une autre, le pointeur qui fait office de tête de lecture doit faire un calcul arithmétique pour déterminer l'adresse mémoire de la case sur laquelle il doit se rendre. Cela peut nécessiter une soustraction, par exemple, ou encore un modulo, qui est tout de même assez coûteux (quelques dizaines de \textit{tics}).\\
+où $\tau_\text{rand} \approx 101.9$. Ainsi, un accès aléatoire dans la mémoire prendra environ 102 \textit{tics}. C'est approximativement 20 fois plus long que pour un accès séquentiel, toutefois cela reste du temps constant ! La différence s'explique par le fait que pour "sauter" d'une position à une autre, le pointeur qui fait office de tête de lecture doit faire un calcul arithmétique pour déterminer l'adresse mémoire de la case sur laquelle il doit se rendre. Cela peut nécessiter une soustraction, par exemple, ou encore un modulo, qui est tout de même assez coûteux (quelques dizaines de \textit{tics}).
 
 \begin{framed}
     \textbf{Conclusion} :
     On constate ainsi que le temps mis pour faire un accès mémoire est constant, peu importe que l'accès soit séquentiel ou aléatoire. On comprend donc l'intérêt du modèle RAM (\textit{Random Acess Memory}) qui permet d'avoir cette propriété tout à fait indispensable aujourd'hui, puisqu'on fait en majorité des appels aléatoires.On peut donc accéder (quasi) instantanément à des données éparpillées en mémoire, ce qui se révèle notamment utile lorsqu'on sollicite plusieurs programmes en même temps.
 \end{framed}
+
+% Interprétation à revoir
+
+\pagebreak
+
+\section{Chapitre 3}
+\subsection{Exercice 1}
+\noindent
+\texttt{0xAE01D500} et \texttt{0xAE01D501} \hfill Oui \hfill \\
+\texttt{0xAE01D500} et \texttt{0xAE01D4FF} \hfill Non \hfill \\
+\texttt{0xAE01D500} et \texttt{0xAE01D580} \hfill Non \hfill \\
+\texttt{0xAE01D53D} et \texttt{0xAE01D542} \hfill Oui \hfill \\
+\texttt{0xAD01F506} et \texttt{0xAE01D508} \hfill Non \hfill \\
+\texttt{0xAE01D55F} et \texttt{0xAE01D560} \hfill Oui \hfill \\
+
+\subsection{Exercice 2}
+On vérifie déjà qu'une instance de type \texttt{noeud} occupe bien 24 octets avec la commande:
+\begin{lstlisting}[style=CStyle]
+printf("sizeof noeud: %lu o", sizeof(struct noeud));
+\end{lstlisting}
+Le fait que la somme des tailles diffère de la taille de la somme (de la structure) provient de la compilation : le compilateur fait de l'alignment (\textit{padding}) sur des multiples de 8 afin qu'un élément se trouve toujours en début de bloc. Ainsi, un \texttt{noeud} occupe une taille de $20+4=24$ octets.\\
+
+a. On peut stocker $32000 / 64 = 500$ blocs. Le noeud 14 par exemple commence à l'adresse \texttt{0xAE01D53C} et finit à l'adresse \texttt{0xAE01D54F}. Or, le premier bloc se termine à l'adresse \texttt{0xAE01D540}\footnote{\texttt{0xAE01D500} décalé de 64 octets}, soit au "milieu" du noeud 14.\\
+
+% blocs : [2, 9, 19, 14], [14, 6, 15, 26], [26, 23, 16, ...]
+b. On commence par lire le noeud 1, qui charge -- c'est donc un accès hors-cache -- le bloc contenant la fin du noeud 20, le 1, le 25 et le début du noeud 22. Ensuite, on lit le noeud 2 qui charge le bloc -- accès hors-cache -- qui contient les noeuds 2, 9 et le début du noeud 14. On fait de même pour le noeud 3, puis pour le 4, on doit charger deux blocs car le noeud 4 est à cheval sur ces deux blocs : on charge donc les noeuds 27 (fin), 10, 24, 4, 21 et 13. On continue jusqu'au noeud 8, qui est dans le bloc du noeud 7, donc pas d'accès hors-cache.\\
+Pour résumer, sur les 27 accès, les accès hors-cache sont : 1, 2, 3, 4, 5, 6, 7 et 16.
+
+\subsection{Exercice 3}
+\begin{center}
+    \begin{tabular}{| c || c | c | c | c |}
+        \hline
+    & L1 instruction & L1 données & L2 & L3 \\
+        \hline
+    Taille mémoire & 32768 & 32768 & 262144 & 16777216 \\
+        \hline
+    Ligne de cache & 64 & 64 & 64 & 64 \\
+        \hline
+    & & & & \\
+        \hline
+    \end{tabular}
+\end{center}
 
 \end{document}
