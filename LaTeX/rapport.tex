@@ -247,14 +247,17 @@ c. En suivant la règle de signes, 1010 est l'encodage de -2.
 
 \subsection{Exercice 7}
 Soit $b$ un nombre de bits. Soit $x$ un entier relatif qu'on souhaite représenter sur $b$ bits.\\
-Si $x \geq 0$, alors l'encodage de $x$ correspond à une écriture dans $[0, 2^{b-1}-1]$, alors cette écriture commence par un zéro (de 00...0 à 01...1). Si $x < 0$, alors $2^b - x \in [2^{b-1}, 2^b-1]$ (soit de 10...0 à 11...1), son écriture commence par un 1.
+Si $x \geq 0$, alors l'encodage de $x$ correspond à une écriture dans $[0, 2^{b-1}-1]$, alors cette écriture commence par un zéro (de 00...0 à 01...1).
+Si $x < 0$, alors $2^b - x \in [2^{b-1}, 2^b-1]$ (soit de 10...0 à 11...1), son écriture commence par un 1.
 
 \halmos
 
 
 \subsection{Exercice 8}
-Dans le premier code, on dispose de 2 cases mémoires différentes. Le résultat affiché est -106 pour la valeur de d, ce qui est normal puisque d est signé.\\
-Dans le deuxième code, on utilise une seule case mémoire à travers l'utilisation de deux pointeurs, un signé et un non signé. Le résultat affiché est identique au premier code.\\
+Dans le premier code, on dispose de 2 cases mémoires différentes.
+Le résultat affiché est -106 pour la valeur de d, ce qui est normal puisque d est signé.\\
+Dans le deuxième code, on utilise une seule case mémoire à travers l'utilisation de deux pointeurs, un signé et un non signé.
+Le résultat affiché est identique au premier code.\\
 Cela permet de montrer que la mémoire est "non typée", l'interprétation de la valeur mémoire dépend directement du type de l'objet qui lit cette valeur.
 
 \subsection{Exercice 9}
@@ -263,7 +266,9 @@ Ainsi, si $x \in 2^{\mathbb{N}}$ (par abus de langage) est divisible par 10, alo
 
 \halmos
 
-b. Supposons que $0.1$ soit représentable sur $kl$ bits. Alors, d'après le résultat du cours, $2^l \times 0.1$ est un entier, autrement dit $2^l$ est divisible par 10. D'après la question précédente, c'est impossible.
+b. Supposons que $0.1$ soit représentable sur $kl$ bits.
+Alors, d'après le résultat du cours, $2^l \times 0.1$ est un entier, autrement dit $2^l$ est divisible par 10.
+D'après la question précédente, c'est impossible.
 
 \halmos
 
@@ -315,10 +320,17 @@ On donne seulement les résultats pour les 5 premiers couples ci-dessus :
 0.1000000014901161 + 0.8000000119209290 = 0.8999999761581421
 \end{lstlisting}
 
-c. On remarque que pour une addition, l'égalité \texttt{a+b==c} est vérifiée lorsque \texttt{a} et \texttt{b} sont représentables, ou quand l'un des deux seulement l'est. Dans le second cas, l'erreur de représentation n'a pas eu d'impact sur le résultat puisque c'est la seule erreur du calcul. Ainsi l'égalité reste vraie.\\
+c. On remarque que pour une addition, l'égalité \texttt{a+b==c} est vérifiée lorsque \texttt{a} et \texttt{b} sont représentables, ou quand l'un des deux seulement l'est.
+Dans le second cas, l'erreur de représentation n'a pas eu d'impact sur le résultat puisque c'est la seule erreur du calcul.
+Ainsi l'égalité reste vraie.\\
 En revanche, dès que les deux flottants ne sont pas représentables, les erreurs s'accumulent et alors la représentation de \texttt{c} peut différer de la valeur de \texttt{a+b}.\\
 
-Dans un cas général si on prend $x, y \in \mathbb{R}$ tels que $x=y$, on aura \texttt{x==y} quand $x$ et $y$ sont représentables sur un nombre de bits donné\footnote{Il faut tout de même faire attention à la précision. Augmenter la précision ne rendra pas les calculs exacts pour autant.}. Dans les autres cas, il est possible d'obtenir un résultat correct mais cela résulte plutôt du hasard.\\
+Dans un cas général si on prend $x, y \in \mathbb{R}$ tels que $x=y$, on aura \texttt{x==y} quand $x$ et $y$ sont représentables sur un nombre de bits donné
+    \footnote{
+        Il faut tout de même faire attention à la précision.
+        Augmenter la précision ne rendra pas les calculs exacts pour autant.
+    }.
+Dans les autres cas, il est possible d'obtenir un résultat correct mais cela résulte plutôt du hasard.\\
 
 d. On modifie la fonction précédente :
 \begin{lstlisting}[style=CStyle]
@@ -353,8 +365,13 @@ On obtient la sortie suivante :
 (8, 6) : 1 1
 (9, 7) : 0 0
 \end{lstlisting}
-On constate que l'ordre est conservé à chaque fois. Comme $10^{-6}$ n'est pas représentable sur 16 bits ($10^{-6} \approx 2^{-20}$), on simule l'effet de la propagation d'une erreur.\\
-On en déduit que des erreurs successives d'arrondi ne bousculent pas l'ordre sur des valeurs arrondies. Toutefois ici on effectue le même calcul des deux côtés. On peut donc toujours les comparer\footnote{Pas l'égalité.}, même après plusieurs calculs, puisque l'ordre est conservé. On peut également penser que cela ne provoquera pas d'évolution chaotique ou aléatoire de ces valeurs dans les calculs. En revanche, pour une suite d'opérations inconnue, cela risque de devenir insignifiant de vouloir comparer deux flottants.
+On constate que l'ordre est conservé à chaque fois.
+Comme $10^{-6}$ n'est pas représentable sur 16 bits ($10^{-6} \approx 2^{-20}$), on simule l'effet de la propagation d'une erreur.\\
+On en déduit que des erreurs successives d'arrondi ne bousculent pas l'ordre sur des valeurs arrondies.
+Toutefois ici on effectue le même calcul des deux côtés.
+On peut donc toujours les comparer\footnote{Pas l'égalité.}, même après plusieurs calculs, puisque l'ordre est conservé.
+On peut également penser que cela ne provoquera pas d'évolution chaotique ou aléatoire de ces valeurs dans les calculs.
+En revanche, pour une suite d'opérations inconnue, cela risque de devenir insignifiant de vouloir comparer deux flottants.
 
 \subsection{Exercice 12}
 On note $s_1 = \displaystyle{\sum_{i=1}^{k} \frac{1}{i}}$ et $s_2 = \displaystyle{\sum_{i=k}^{1} \frac{1}{i}}$.\\
@@ -385,8 +402,12 @@ k=1000000000
     s1 = 15.4036827087402344
     s2 = 18.8079185485839844
 \end{lstlisting}
-On constate que les résultats diffèrent\footnote{Même plus que ça, on dirait que la série converge ! On connait l'équivalent pour la série harmonique : $H_n \underset{n \to +\infty}{\sim} \gamma + \ln(n)$ où $\gamma \approx 0.5$ est la constante d'Euler. Pour $n = 10^9$, on devrait donc plutôt être autour de $H_n \approx 21$.} d'autant plus que le nombre d'erreurs successives est grand, ce qui n'est pas étonnant. Là où le résultat interpelle, c'est que l'ordre de parcours de la somme a un impact conséquent sur le résultat.\\
-Cette erreur est due au fait que lorsque le parcours est décroissant, on finit pas les petits nombres. Ces derniers causent alors des erreurs d'arrondi car leur ordre de grandeur est faible par rapport aux premiers nombres.
+On constate que les résultats diffèrent\footnote{Même plus que ça, on dirait que la série converge !
+On connait l'équivalent pour la série harmonique : $H_n \underset{n \to +\infty}{\sim} \gamma + \ln(n)$ où $\gamma \approx 0.5$ est la constante d'Euler.
+Pour $n = 10^9$, on devrait donc plutôt être autour de $H_n \approx 21$.} d'autant plus que le nombre d'erreurs successives est grand, ce qui n'est pas étonnant.
+Là où le résultat interpelle, c'est que l'ordre de parcours de la somme a un impact conséquent sur le résultat.\\
+Cette erreur est due au fait que lorsque le parcours est décroissant, on finit pas les petits nombres.
+Ces derniers causent alors des erreurs d'arrondi car leur ordre de grandeur est faible par rapport aux premiers nombres.
 
 \subsection{Exercice 13}
 a. La taille d'un \texttt{float} en C est de 4 \textit{bytes}, soit 32 bits :
@@ -421,7 +442,8 @@ On décale la virgule pour trouver l'exposant :
 \begin{equation*}
     0.1 = 1.10011001100110011001101_2 \times 2^{-4}
 \end{equation*}
-Cela donne donc un exposant de $E = b - 4 = 123 = 01111011_2$ sur 8 bits. Enfin, $0.1 > 0$ donc on met un premier bit à 0. On obtient donc l'encodage suivant -- dont on donne également la valeur décimale réelle -- pour le nombre 0.1 :
+Cela donne donc un exposant de $E = b - 4 = 123 = 01111011_2$ sur 8 bits.
+Enfin, $0.1 > 0$ donc on met un premier bit à 0. On obtient donc l'encodage suivant -- dont on donne également la valeur décimale réelle -- pour le nombre 0.1 :
 \begin{equation*}
     \underset{\text{signe}}{\underbrace{0}}\underset{\text{exposant}}{\underbrace{01111011}}\underset{\text{mantisse}}{\underbrace{10011001100110011001101_2}} = 0.100000001490116119384765625
 \end{equation*}
@@ -499,7 +521,8 @@ On obtient les résultats suivants:
 \end{center}
 
 \subsection{Exercice 6}
-a. On teste la fonction avec la fonction \texttt{test} calculant la somme des premiers carrés. On obtient des résultats cohérents (croissance linéaire). La fonction \texttt{print\_timing} comprend une amorce qui exécute 10 fois la fonction à tester et moyenne les mesures sur 100 appels.
+a. On teste la fonction avec la fonction \texttt{test} calculant la somme des premiers carrés. On obtient des résultats cohérents (croissance linéaire).
+La fonction \texttt{print\_timing} comprend une amorce qui exécute 10 fois la fonction à tester et moyenne les mesures sur 100 appels.
 
 b. Voici la fonction \texttt{print\_timing}:
 
@@ -579,7 +602,8 @@ On peut ainsi tracer les résultats obtenus pour les pas situés entre 1 et 1000
         \end{axis}
     \end{tikzpicture}
 \end{center}
-On remarque que les temps d'accès semblent converger\footnote{Plus précisément -- car on sait qu'il est impossible que cela converge -- on semble observer une croissance logarithmique.} ! Pour mieux l'illustrer, on trace par dessus les mesures la fonction suivante (en vert sur le graphique):
+On remarque que les temps d'accès semblent converger\footnote{Plus précisément -- car on sait qu'il est impossible que cela converge -- on semble observer une croissance logarithmique.}!
+Pour mieux l'illustrer, on trace par dessus les mesures la fonction suivante (en vert sur le graphique):
 \begin{equation*}
     x \mapsto 6\times 10^8 (1-e^{-\frac{x}{130}})
 \end{equation*}
@@ -624,10 +648,13 @@ On obtient les temps suivants:
     \end{tabular}
 \end{center}
 
-b. On constate que la fonction \texttt{access\_rand} est (très largement, d'un facteur 30 environ) plus lente que la fonction \texttt{access\_seq} ! Est-ce réellement le cas ? Pour l'instant, on ne peut pas répondre à cette question, toutefois on peut facilement se rendre compte qu'on mesure bien trop de choses. En effet, à chaque accès aléatoire, on appelle -- donc on mesure -- la fonction \texttt{rand}, qui prend visiblement un temps non négligeable.
+b. On constate que la fonction \texttt{access\_rand} est (très largement, d'un facteur 30 environ) plus lente que la fonction \texttt{access\_seq}!
+Est-ce réellement le cas ? Pour l'instant, on ne peut pas répondre à cette question, toutefois on peut facilement se rendre compte qu'on mesure bien trop de choses.
+En effet, à chaque accès aléatoire, on appelle -- donc on mesure -- la fonction \texttt{rand}, qui prend visiblement un temps non négligeable.
 
 
-c. On modifie légèrement les fonctions de mesure\footnote{Tous les codes sont disponibles sur \href{https://github.com/VTrelat/ComputerArchitecture/tree/main/c}{GitHub}. Attention toutefois, l'exécution du code correspondant à cette mesure peut prendre plusieurs dizaines de minutes et nécessite au moins une dizaine de Go de RAM.} et on écrit la fonction suivante :
+c. On modifie légèrement les fonctions de mesure\footnote{Tous les codes sont disponibles sur \href{https://github.com/VTrelat/ComputerArchitecture/tree/main/c}{GitHub}.
+Attention toutefois, l'exécution du code correspondant à cette mesure peut prendre plusieurs dizaines de minutes et nécessite au moins une dizaine de Go de RAM.} et on écrit la fonction suivante :
 \begin{lstlisting}[style=CStyle]
 void access_aux(int *tab, unsigned long int *aux, unsigned long int n)
 {
@@ -681,18 +708,25 @@ Passons rapidement sur l'étude de ces courbes.\\
 \begin{equation*}
     t_{\text{seq}} \colon n \mapsto \tau_\text{seq} n
 \end{equation*}
-donnant une estimation temps mis pour réaliser des accès séquentiels en mémoire, où $\tau_\text{seq} \approx 4.298$. Le temps d'un accès séquentiel en mémoire, \textit{i.e.} sur des cases mémoires successives, est donc d'environ 4 \textit{tics}\footnote{Le temps de la mesure augmente linéairement avec le nombre d'accès mémoire. En moyennant, on obtient bien un temps constant par mesure.}. C'est très rapide !\\
+donnant une estimation temps mis pour réaliser des accès séquentiels en mémoire, où $\tau_\text{seq} \approx 4.298$.
+Le temps d'un accès séquentiel en mémoire, \textit{i.e.} sur des cases mémoires successives, est donc d'environ 4 \textit{tics}\footnote{Le temps de la mesure augmente linéairement avec le nombre d'accès mémoire.
+En moyennant, on obtient bien un temps constant par mesure.}. C'est très rapide !\\
 
 \noindent
 \textbf{Accès aléatoire}: on peut de même définir la fontion
 \begin{equation*}
     t_{\text{rand}} \colon n \mapsto \tau_\text{rand} n
 \end{equation*}
-où $\tau_\text{rand} \approx 101.9$. Ainsi, un accès aléatoire dans la mémoire prendra environ 102 \textit{tics}. C'est approximativement 20 fois plus long que pour un accès séquentiel, toutefois cela reste du temps constant ! La différence peut déjà s'expliquer par le fait que pour "sauter" d'une position à une autre, le pointeur qui fait office de tête de lecture doit faire un calcul arithmétique pour déterminer l'adresse mémoire de la case sur laquelle il doit se rendre. Cela peut nécessiter une soustraction, par exemple, ou encore un modulo, qui est tout de même assez coûteux (quelques dizaines de \textit{tics}).
+où $\tau_\text{rand} \approx 101.9$. Ainsi, un accès aléatoire dans la mémoire prendra environ 102 \textit{tics}.
+C'est approximativement 20 fois plus long que pour un accès séquentiel, toutefois cela reste du temps constant !
+La différence peut déjà s'expliquer par le fait que pour "sauter" d'une position à une autre, le pointeur qui fait office de tête de lecture doit faire un calcul arithmétique pour déterminer l'adresse mémoire de la case sur laquelle il doit se rendre.
+Cela peut nécessiter une soustraction, par exemple, ou encore un modulo, qui est tout de même assez coûteux (quelques dizaines de \textit{tics}).
 
 \begin{framed}
     \textbf{Conclusion} :
-    Néanmoins, la vraie différence vient d'un autre phénomène qui est la mise en cache de données\footnote{cf Chapitre 3}. Lorsqu'on fait des accès séquentiel, on charge des blocs en cache, et on fait une suite d'accès en cache, ce qui est rapide. Lorsqu'on fait une suite d'accès aléatoires, on fait des accès hors-cache presque à chaque nouvel accès, puisque la probabilité que deux accès consécutifs concernent des données présentes dans un même bloc est beaucoup plus faible.
+    Néanmoins, la vraie différence vient d'un autre phénomène qui est la mise en cache de données\footnote{cf Chapitre 3}.
+    Lorsqu'on fait des accès séquentiel, on charge des blocs en cache, et on fait une suite d'accès en cache, ce qui est rapide.
+    Lorsqu'on fait une suite d'accès aléatoires, on fait des accès hors-cache presque à chaque nouvel accès, puisque la probabilité que deux accès consécutifs concernent des données présentes dans un même bloc est beaucoup plus faible.
 \end{framed}
 
 \pagebreak
@@ -712,16 +746,23 @@ On vérifie déjà qu'une instance de type \texttt{noeud} occupe bien 24 octets 
 \begin{lstlisting}[style=CStyle]
 printf("sizeof noeud: %lu o", sizeof(struct noeud));
 \end{lstlisting}
-Le fait que la somme des tailles diffère de la taille de la somme (de la structure) provient de la compilation : le compilateur fait de l'alignment (\textit{padding}) sur des multiples de 8 afin qu'un élément se trouve toujours en début de bloc. Ainsi, un \texttt{noeud} occupe une taille de $20+4=24$ octets.\\
+Le fait que la somme des tailles diffère de la taille de la somme (de la structure) provient de la compilation : le compilateur fait de l'alignment (\textit{padding}) sur des multiples de 8 afin qu'un élément se trouve toujours en début de bloc.
+Ainsi, un \texttt{noeud} occupe une taille de $20+4=24$ octets.\\
 
-a. On peut stocker $\frac{32\times1024}{64} = 512$ blocs. Le noeud 14 par exemple commence à l'adresse \texttt{0xAE01D53C} et finit à l'adresse \texttt{0xAE01D54F}. Or, le premier bloc se termine à l'adresse \texttt{0xAE01D540}\footnote{\texttt{0xAE01D500} décalé de 64 octets}, soit au "milieu" du noeud 14.\\
+a. On peut stocker $\frac{32\times1024}{64} = 512$ blocs.
+Le noeud 14 par exemple commence à l'adresse \texttt{0xAE01D53C} et finit à l'adresse \texttt{0xAE01D54F}.
+Or, le premier bloc se termine à l'adresse \texttt{0xAE01D540}\footnote{\texttt{0xAE01D500} décalé de 64 octets}, soit au "milieu" du noeud 14.\\
 
-b. On commence par lire le noeud 1, qui charge -- c'est donc un accès hors-cache -- le bloc contenant la fin du noeud 20, le 1, le 25 et le début du noeud 22. Ensuite, on lit le noeud 2 qui charge le bloc -- accès hors-cache -- qui contient les noeuds 2, 9 et le début du noeud 14. On fait de même pour le noeud 3, puis pour le 4, on doit charger deux blocs car le noeud 4 est à cheval sur ces deux blocs : on charge donc les noeuds 27 (fin), 10, 24, 4, 21 et 13. On continue jusqu'au noeud 8, qui est dans le bloc du noeud 7, donc pas d'accès hors-cache.\\
+b. On commence par lire le noeud 1, qui charge -- c'est donc un accès hors-cache -- le bloc contenant la fin du noeud 20, le 1, le 25 et le début du noeud 22.
+Ensuite, on lit le noeud 2 qui charge le bloc -- accès hors-cache -- qui contient les noeuds 2, 9 et le début du noeud 14.
+On fait de même pour le noeud 3, puis pour le 4, on doit charger deux blocs car le noeud 4 est à cheval sur ces deux blocs : on charge donc les noeuds 27 (fin), 10, 24, 4, 21 et 13.
+On continue jusqu'au noeud 8, qui est dans le bloc du noeud 7, donc pas d'accès hors-cache.\\
 Pour résumer, sur les 27 accès, les accès hors-cache sont : 1, 2, 3, 4, 5, 6, 7 et 16.
 
 \subsection{Exercice 3}
 
-On obtient les résultats suivants\footnote{Sous Mac, on peut accéder à ce genre d'informations par la commande \texttt{sysctl}. En particulier, ici on peut utiliser la commande \texttt{sysctl -a | grep hw}.}:
+On obtient les résultats suivants\footnote{Sous Mac, on peut accéder à ce genre d'informations par la commande \texttt{sysctl}.
+En particulier, ici on peut utiliser la commande \texttt{sysctl -a | grep hw}.}:
 \begin{center}\label{ex3:tab}
     \begin{tabular}{| c || c | c | c | c |}
         \hline
@@ -737,7 +778,9 @@ On obtient les résultats suivants\footnote{Sous Mac, on peut accéder à ce gen
 \end{center}
 
 \subsection{Exercice 4}
-On cherche à mettre en évidence la taille du cache L1 et du cache L2. Pour cela, on va regarder les temps mis pour parcourir un tableau en colonnes et si on observe un pic pour une taille $N$ de tableau, cela signifie que le cache est de taille $64\times N$ ko. En l'occurrence, on s'attend à voir un pic autour de $N = \frac{32768}{64} = 512$ pour L1 et $N = \frac{262144}{64} = 4096$ pour L2.
+On cherche à mettre en évidence la taille du cache L1 et du cache L2.
+Pour cela, on va regarder les temps mis pour parcourir un tableau en colonnes et si on observe un pic pour une taille $N$ de tableau, cela signifie que le cache est de taille $64\times N$ ko.
+En l'occurrence, on s'attend à voir un pic autour de $N = \frac{32768}{64} = 512$ pour L1 et $N = \frac{262144}{64} = 4096$ pour L2.
 
 \begin{figure}[!h]
     \begin{tikzpicture}
@@ -794,12 +837,13 @@ On donne quelques valeurs numériques autour de $N = 4096$ ci-dessous:
 
 \subsection{Exercice 5}
 Voir le tableau de l'\nameref{ex3:tab}\footnote{Note : sous Mac, on obtient seulement la valeur de l'associativité pour le cache L2 : \texttt{machdep.cpu.cache.L2\_associativity: 4
-}. Toutes les autres valeurs ont été obtenues sur la fiche technique du processeur fournie par Intel, en l'occurrence un \texttt{Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz}.}
+}.
+Toutes les autres valeurs ont été obtenues sur la fiche technique du processeur fournie par Intel, en l'occurrence un \texttt{Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz}.}.\\
 
 
 \subsection{Exercice 6}
 % blocs : [2, 9, 19, 14], [14, 6, 15, 26], [26, 23, 16, ...]
-On redonne ci-dessous les blocs de l'exercice 2 :
+On redonne ci-dessous les blocs de l'exercice 2 :\\
 \begin{center}
     \begin{tabular}{| c | c || c | c || c | c |}
         \rowcolor{lightgrey}
@@ -851,13 +895,15 @@ Par exemple, pour 2, 3, 11, 9, 17, 5, etc:
     \item[$\bullet$] \texttt{(0xAE01D500 >> 6) mod 8 = 4}
     \item[$\bullet$] \texttt{(0xAF01D900 >> 6) mod 8 = 4}
     \item[$\bullet$] \texttt{(0xAE01D500 >> 6) mod 8 = 4}
-    \item[$\bullet$] \dots
+    \item[$\bullet$] \dots\\
 \end{itemize}
 % Sous caches :
 % 1 : [2, 9, 19, 14], [3, 17, 12, 20], [11, 5, 18, 27], [2, 9, 19, 14], [3, 17, 12, 20], [11, 5, 18, 27], [2, 9, 19, 14], [3, 17, 12, 20], [11, 5, 18, 27]
 % 2 : [20, 1, 25, 22], [27, 10, 24, 4], [14, 6, 15, 26], [20, 1, 25, 22]
 % 3 : [22, 8, 7], [4, 21, 13], [26, 23, 16], [22, 8, 7]
-Le premier appel qui est fait en cache est l'accès de 8, qui est dans le bloc chargé par 7. Le premier appel hors-cache non trivial est l'accès à 9, qui est bien dans le même bloc que 2, mais les accès à 3 et à 5 ont écrasé le premier bloc entre temps.\\
+
+Le premier appel qui est fait en cache est l'accès de 8, qui est dans le bloc chargé par 7.
+Le premier appel hors-cache non trivial est l'accès à 9, qui est bien dans le même bloc que 2, mais les accès à 3 et à 5 ont écrasé le premier bloc entre temps.\\
 En résumé :
 \begin{itemize}
     \item[$\bullet$] \textit{cache-miss} : 1, 2, 3, 4, 5, 6, 7, 9, 12, 13, 16, 18, 19, 20, 22, 25, 27
@@ -882,5 +928,73 @@ En résumé :
 %             14, 20, 27
 %             26, 22, 4
 % /!\ 9 fait un cache-miss car on a chargé 3 et 5 entre temps.
+
+\subsection{Exercice 7}
+On trace les temps successifs obtenus pour les trois expériences (N valant 1000000, 1048576 puis 1300000):
+\begin{figure}[!h]
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=\textwidth,
+            height=6cm,
+            legend pos = north west,
+            xlabel=$i$,
+            ymin=180,
+            ymax=600,
+            ylabel=tics]
+        \addplot[
+            semithick,
+            blue,
+        ] file[skip first] {../c/ch3/ex7a};
+        \node at (axis cs:500,550)(B){$N=$1 000 000};
+        \end{axis}
+    \end{tikzpicture}
+\end{figure}
+\vspace{-20pt}
+\begin{figure}[!h]
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=\textwidth,
+            height=6cm,
+            legend pos = north west,
+            xlabel=$i$,
+            ymin=180,
+            ymax=600,
+            ylabel=tics]
+        \addplot[
+            semithick,
+            blue,
+        ] file[skip first] {../c/ch3/ex7b};
+        \node at (axis cs:500,550)(B){$N=$1 048 576};
+        \end{axis}
+    \end{tikzpicture}
+\end{figure}
+\vspace{-20pt}
+\begin{figure}[!h]
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=\textwidth,
+            height=6cm,
+            legend pos = north west,
+            xlabel=$i$,
+            ymin=180,
+            ymax=600,
+            ylabel=tics]
+        \addplot[
+            semithick,
+            blue,
+        ] file[skip first] {../c/ch3/ex7c};
+        \node at (axis cs:500,550)(B){$N=$1 300 000};
+        \end{axis}
+    \end{tikzpicture}
+\end{figure}
+
+On constate que pour $N=2^{20}$, les temps sont globalement toujours supérieurs aux deux autres cas. En effet, on peut calculer les temps moyens $T(N)$ dans chaque cas :
+\begin{align*}
+    T(1000000) = 227.726\\
+    T(1048576) = 252.717\\
+    T(1300000) = 239.417
+\end{align*}
+
+Pourquoi une recherche dichotomique dans un tableau de taille $2^{20}$ met un temps environ 10\% plus long qu'un tableau de taille 1 300 000 ? Ce phénomène est lié au phénomène d'associativité dans le système de cache de l'architecture de la machine. En effet, pour un tableau dont la taille est une puissance de 2, la taille de chaque sous-tableau est encore une puissance de 2. Or, le nombre de sous-cache ici est aussi une puissance de 2 -- mais beaucoup plus petite, d'où le $2^{20}$ -- donc à chaque accès au milieu du tableau tombe sur une puissance de 2. Or, on sait que les blocs mis en cache sont mis dans le sous-cache dont le numéro est calculé "modulo le nombre de sous-cache". Ainsi, on écrase à chaque étape la valeur précédemment mise en cache. On ne fait donc \underline{que} des accès hors-cache, d'où le temps plus long.
 
 \end{document}
