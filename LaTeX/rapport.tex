@@ -703,7 +703,7 @@ où $\tau_\text{rand} \approx 101.9$. Ainsi, un accès aléatoire dans la mémoi
 \texttt{0xAE01D55F} et \texttt{0xAE01D560} \hfill Oui \hfill \\
 
 \subsection{Exercice 2}
-On vérifie déjà qu'une instance de type \texttt{noeud} occupe bien 24 octets avec la commande:
+On vérifie déjà qu'une instance de type \texttt{noeud} occupe bien 24 octets avec la commande:\\
 \begin{lstlisting}[style=CStyle]
 printf("sizeof noeud: %lu o", sizeof(struct noeud));
 \end{lstlisting}
@@ -716,6 +716,7 @@ b. On commence par lire le noeud 1, qui charge -- c'est donc un accès hors-cach
 Pour résumer, sur les 27 accès, les accès hors-cache sont : 1, 2, 3, 4, 5, 6, 7 et 16.
 
 \subsection{Exercice 3}
+
 On obtient les résultats suivants\footnote{Sous Mac, on peut accéder à ce genre d'informations par la commande \texttt{sysctl}. En particulier, ici on peut utiliser la commande \texttt{sysctl -a | grep hw}.}:
 \begin{center}
     \begin{tabular}{| c || c | c | c | c |}
@@ -726,16 +727,19 @@ On obtient les résultats suivants\footnote{Sous Mac, on peut accéder à ce gen
         \hline
     Ligne de cache & 64 & 64 & 64 & 64 \\
         \hline
-    & & & & \\
+    Associativité & 8 & 8 & 4 & 16 \\
         \hline
     \end{tabular}
 \end{center}
 
-\begin{center}
+\subsection{Exercice 4}
+On cherche à mettre en évidence la taille du cache L1 et du cache L2. Pour cela, on va regarder les temps mis pour parcourir un tableau en colonnes et si on observe un pic pour une taille $N$ de tableau, cela signifie que le cache est de taille $64\times N$ ko. En l'occurrence, on s'attend à voir un pic autour de $N = \frac{32768}{64} = 512$ pour L1 et $N = \frac{262144}{64} = 4096$ pour L2.
+
+\begin{figure}[!h]
     \begin{tikzpicture}
         \begin{axis}[
             width=\textwidth,
-            height=6cm,
+            height=5cm,
             legend pos = north west,
             xlabel=$N$,
             ylabel=tics]
@@ -743,17 +747,48 @@ On obtient les résultats suivants\footnote{Sous Mac, on peut accéder à ce gen
             semithick,
             blue,
         ] file[skip first] {../c/ch3/ex4a};
+        \node at (axis cs:480,3100)(B){$N=512$};
+        \node at (axis cs:512,3187)(C){};
+        \draw [->](B.east)--(C.west);
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Mise en évidence du cache L1}
+\end{figure}
+
+\begin{figure}[!h]
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=\textwidth,
+            height=5cm,
+            legend pos = north west,
+            xlabel=$N$,
+            ylabel=tics]
         \addplot[
             semithick,
             red,
         ] file[skip first] {../c/ch3/ex4b};
-        \legend{
-            Lines, 
-            Columns,
-        }
+        \node at (axis cs:4085,115000)(B){$N=4096$};
+        \node at (axis cs:4096,125000)(C){};
+        \draw [->](B.east)--(C.west);
         \end{axis}
     \end{tikzpicture}
+    \caption{Mise en évidence du cache L2}
+\end{figure}
+
+On donne quelques valeurs numériques autour de $N = 4096$ ci-dessous:
+\begin{center}
+    \begin{tabular}{| c | c | c | c | c | c | c | c |}
+        \hline
+    n & 4094 & 4095 & 4096 & 4097 & 4098 & 4099 \\
+    \hline
+    en ligne & 59737 & 54042 & 52042 & 56912 & 61912 & 62952 \\
+    \hline
+    en colonne & 61302 & 63239 & 126933 & 97693 & 78726 & 67656 \\
+    \hline
+    \end{tabular}
 \end{center}
+
+\subsection{Exercice 5}
 
 
 % Ex 6 : cache 32 ko = 32 * 2**10
