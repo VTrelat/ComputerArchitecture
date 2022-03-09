@@ -12,6 +12,7 @@
 \usepackage{circuitikz}
 \usepackage{pgfplots}
 \usepackage{framed}
+\usepackage{xcolor,colortbl}
 
 
 \usetikzlibrary{babel}
@@ -19,6 +20,10 @@
 
 \definecolor{mGreen}{rgb}{0,0.6,0}
 \definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+\definecolor{lightgreen}{rgb}{0.94,1,0.94}
+\definecolor{lightblue}{rgb}{0.94,0.94, 1}
+\definecolor{lightred}{rgb}{1,0.94,0.94}
 \definecolor{mPurple}{rgb}{0.58,0,0.82}
 \definecolor{backgroundColour}{rgb}{0.92,0.92,0.95}
 
@@ -709,16 +714,15 @@ printf("sizeof noeud: %lu o", sizeof(struct noeud));
 \end{lstlisting}
 Le fait que la somme des tailles diffère de la taille de la somme (de la structure) provient de la compilation : le compilateur fait de l'alignment (\textit{padding}) sur des multiples de 8 afin qu'un élément se trouve toujours en début de bloc. Ainsi, un \texttt{noeud} occupe une taille de $20+4=24$ octets.\\
 
-a. On peut stocker $32000 / 64 = 500$ blocs. Le noeud 14 par exemple commence à l'adresse \texttt{0xAE01D53C} et finit à l'adresse \texttt{0xAE01D54F}. Or, le premier bloc se termine à l'adresse \texttt{0xAE01D540}\footnote{\texttt{0xAE01D500} décalé de 64 octets}, soit au "milieu" du noeud 14.\\
+a. On peut stocker $\frac{32\times1024}{64} = 512$ blocs. Le noeud 14 par exemple commence à l'adresse \texttt{0xAE01D53C} et finit à l'adresse \texttt{0xAE01D54F}. Or, le premier bloc se termine à l'adresse \texttt{0xAE01D540}\footnote{\texttt{0xAE01D500} décalé de 64 octets}, soit au "milieu" du noeud 14.\\
 
-% blocs : [2, 9, 19, 14], [14, 6, 15, 26], [26, 23, 16, ...]
 b. On commence par lire le noeud 1, qui charge -- c'est donc un accès hors-cache -- le bloc contenant la fin du noeud 20, le 1, le 25 et le début du noeud 22. Ensuite, on lit le noeud 2 qui charge le bloc -- accès hors-cache -- qui contient les noeuds 2, 9 et le début du noeud 14. On fait de même pour le noeud 3, puis pour le 4, on doit charger deux blocs car le noeud 4 est à cheval sur ces deux blocs : on charge donc les noeuds 27 (fin), 10, 24, 4, 21 et 13. On continue jusqu'au noeud 8, qui est dans le bloc du noeud 7, donc pas d'accès hors-cache.\\
 Pour résumer, sur les 27 accès, les accès hors-cache sont : 1, 2, 3, 4, 5, 6, 7 et 16.
 
 \subsection{Exercice 3}
 
 On obtient les résultats suivants\footnote{Sous Mac, on peut accéder à ce genre d'informations par la commande \texttt{sysctl}. En particulier, ici on peut utiliser la commande \texttt{sysctl -a | grep hw}.}:
-\begin{center}
+\begin{center}\label{ex3:tab}
     \begin{tabular}{| c || c | c | c | c |}
         \hline
     & L1 instruction & L1 données & L2 & L3 \\
@@ -789,6 +793,76 @@ On donne quelques valeurs numériques autour de $N = 4096$ ci-dessous:
 \end{center}
 
 \subsection{Exercice 5}
+Voir le tableau de l'\nameref{ex3:tab}\footnote{Note : sous Mac, on obtient seulement la valeur de l'associativité pour le cache L2 : \texttt{machdep.cpu.cache.L2\_associativity: 4
+}. Toutes les autres valeurs ont été obtenues sur la fiche technique du processeur fournie par Intel, en l'occurrence un \texttt{Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz}.}
+
+
+\subsection{Exercice 6}
+% blocs : [2, 9, 19, 14], [14, 6, 15, 26], [26, 23, 16, ...]
+On redonne ci-dessous les blocs de l'exercice 2 :
+\begin{center}
+    \begin{tabular}{| c | c || c | c || c | c |}
+        \rowcolor{lightgrey}
+        \hline
+        $p$ & addresse & $p$ & addresse & $p$ & addresse \\
+        \hline
+        \hline
+        \rowcolor{lightgreen}
+        2 & \texttt{0xAE01D500} & 3 & \texttt{0xAF01D900} & 11 & \texttt{0xBF01DD00} \\
+        \hline
+        \rowcolor{lightgreen}
+        9 & \texttt{0xAE01D514} & 17 & \texttt{0xAF01D914} & 5 & \texttt{0xBF01DD14} \\
+        \hline
+        \rowcolor{lightgreen}
+        19 & \texttt{0xAE01D528} & 12 & \texttt{0xAF01D928} & 18 & \texttt{0xBF01DD28} \\
+        \hline
+        \rowcolor{lightgreen}
+        14 & \texttt{0xAE01D53C} & 20 & \texttt{0xAF01D93C} & 27 & \texttt{0xBF01DD3C} \\
+        \hline
+        \hline
+        \rowcolor{lightblue}
+        14 & \texttt{0xAE01D53C} & 20 & \texttt{0xAF01D93C} & 27 & \texttt{0xBF01DD3C} \\
+        \hline
+        \rowcolor{lightblue}
+        6 & \texttt{0xAE01D550} & 1 & \texttt{0xAF01D950} & 10 & \texttt{0xBF01DD50} \\
+        \hline
+        \rowcolor{lightblue}
+        15 & \texttt{0xAE01D564} & 25 & \texttt{0xAF01D964} & 24 & \texttt{0xBF01DD64}\\
+        \hline
+        \rowcolor{lightblue}
+        26 & \texttt{0xAE01D578} & 22 & \texttt{0xAF01D978} & 4 & \texttt{0xBF01DD78}\\
+        \hline
+        \hline
+        \rowcolor{lightred}
+        26 & \texttt{0xAE01D578} & 22 & \texttt{0xAF01D978} & 4 & \texttt{0xBF01DD78}\\
+        \hline
+        \rowcolor{lightred}
+        23 & \texttt{0xAE01D58C} & 8 & \texttt{0xAF01D98C} & 21 & \texttt{0xBF01DD8C}\\
+        \hline
+        \rowcolor{lightred}
+        16 & \texttt{0xAE01D5A0} & 7 & \texttt{0xAF01D9A0} & 13 & \texttt{0xBF01DDA0}\\
+        \hline
+    \end{tabular}
+\end{center}
+Si on dispose d'un cache de 1 Ko et d'un niveau d'associativité 2, on a $\frac{1024}{64} = 16$ blocs, 128 octets par sous-cache, soit 2 blocs et $\frac{1024}{128} = 8$ sous-caches.\\
+Les couleurs dans le tableau représentent les blocs qui sont dans le même sous-cache.
+Par exemple, pour 2, 3, 11, 9, 17, 5, etc:
+\begin{itemize}
+    \item[$\bullet$] \texttt{(0xAE01D500 >> 6) mod 8 = 4}
+    \item[$\bullet$] \texttt{(0xAF01D900 >> 6) mod 8 = 4}
+    \item[$\bullet$] \texttt{(0xAE01D500 >> 6) mod 8 = 4}
+    \item[$\bullet$] \dots
+\end{itemize}
+% Sous caches :
+% 1 : [2, 9, 19, 14], [3, 17, 12, 20], [11, 5, 18, 27], [2, 9, 19, 14], [3, 17, 12, 20], [11, 5, 18, 27], [2, 9, 19, 14], [3, 17, 12, 20], [11, 5, 18, 27]
+% 2 : [20, 1, 25, 22], [27, 10, 24, 4], [14, 6, 15, 26], [20, 1, 25, 22]
+% 3 : [22, 8, 7], [4, 21, 13], [26, 23, 16], [22, 8, 7]
+Le premier appel qui est fait en cache est l'accès de 8, qui est dans le bloc chargé par 7. Le premier appel hors-cache non trivial est l'accès à 9, qui est bien dans le même bloc que 2, mais les accès à 3 et à 5 ont écrasé le premier bloc entre temps.\\
+En résumé :
+\begin{itemize}
+    \item[$\bullet$] \textit{cache-miss} : 1, 2, 3, 4, 5, 6, 7, 9, 12, 13, 16, 18, 19, 20, 22, 25, 27
+    \item[$\bullet$] \textit{cache-hit} : 8, 10, 11, 14, 15, 17, 21, 23, 24, 26
+\end{itemize}
 
 
 % Ex 6 : cache 32 ko = 32 * 2**10
