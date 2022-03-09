@@ -995,6 +995,12 @@ On constate que pour $N=2^{20}$, les temps sont globalement toujours supérieurs
     T(1300000) = 239.417
 \end{align*}
 
-Pourquoi une recherche dichotomique dans un tableau de taille $2^{20}$ met un temps environ 10\% plus long qu'un tableau de taille 1 300 000 ? Ce phénomène est lié au phénomène d'associativité dans le système de cache de l'architecture de la machine. En effet, pour un tableau dont la taille est une puissance de 2, la taille de chaque sous-tableau est encore une puissance de 2. Or, le nombre de sous-cache ici est aussi une puissance de 2 -- mais beaucoup plus petite, d'où le $2^{20}$ -- donc à chaque accès au milieu du tableau tombe sur une puissance de 2. Or, on sait que les blocs mis en cache sont mis dans le sous-cache dont le numéro est calculé "modulo le nombre de sous-cache". Ainsi, on écrase à chaque étape la valeur précédemment mise en cache. On ne fait donc \underline{que} des accès hors-cache, d'où le temps plus long.
+Pourquoi une recherche dichotomique dans un tableau de taille $2^{20}$ met un temps environ 10\% plus long qu'un tableau de taille 1 300 000 ?\\
+Ce phénomène est lié au phénomène d'associativité dans le système de cache de l'architecture de la machine.
+En effet, pour un tableau dont la taille est une puissance de 2, la taille de chaque sous-tableau est encore une puissance de 2.
+Or, le nombre de sous-cache ici est aussi une puissance de 2 -- mais beaucoup plus petite, d'où le $2^{20}$ -- donc à chaque accès au milieu du tableau tombe sur une puissance de 2.
+Or, on sait que les blocs mis en cache sont mis dans le sous-cache dont le numéro est calculé "modulo le nombre de sous-cache".
+Ainsi, on écrase à chaque étape la valeur précédemment mise en cache.
+On ne fait donc (presque) que des accès hors-cache, d'où le temps plus long.
 
 \end{document}
