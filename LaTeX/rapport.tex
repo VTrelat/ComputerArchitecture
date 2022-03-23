@@ -24,18 +24,39 @@
 \definecolor{lightgreen}{rgb}{0.94,1,0.94}
 \definecolor{lightblue}{rgb}{0.94,0.94, 1}
 \definecolor{lightred}{rgb}{1,0.94,0.94}
+\definecolor{Cblue}{RGB}{40, 103, 237}
+\definecolor{Corange}{RGB}{196, 108, 41}
 \definecolor{mPurple}{rgb}{0.58,0,0.82}
 \definecolor{backgroundColour}{rgb}{0.92,0.92,0.95}
 
 \newcommand{\halmos}{\hfill$\blacksquare$}
 
+\lstdefinestyle{customasm}{
+    belowcaptionskip=1\baselineskip,
+    frame=single, 
+    frameround=tttt,
+    xleftmargin=\parindent,
+    language=[x86masm]Assembler,
+    basicstyle=\footnotesize\ttfamily,
+    commentstyle=\itshape\color{green!60!black},
+    keywordstyle=\color{Cblue},
+    identifierstyle=\color{Corange},
+    tabsize=4,
+    numbers=left,
+    numbersep=8pt,
+    stepnumber=1,
+    numberstyle=\tiny\color{gray}, 
+    columns = fullflexible,
+}
+
+
 \lstdefinestyle{CStyle}{
     backgroundcolor=\color{backgroundColour},   
     commentstyle=\color{mGreen},
-    keywordstyle=\color{magenta},
+    keywordstyle=\color{Cblue},
     numberstyle=\tiny\color{mGray},
-    stringstyle=\color{mPurple},
-    basicstyle=\footnotesize,
+    stringstyle=\color{Corange},
+    basicstyle=\ttfamily\footnotesize,
     breakatwhitespace=false,     
     frame=single,    
     breaklines=true,                 
@@ -988,7 +1009,7 @@ On trace les temps successifs obtenus pour les trois expériences (N valant 1000
     \end{tikzpicture}
 \end{figure}
 
-On constate que pour $N=2^{20}$, les temps sont globalement toujours supérieurs aux deux autres cas. En effet, on peut calculer les temps moyens $T(N)$ dans chaque cas :
+On constate que pour $N=2^{20}$, les temps sont globalement toujours supérieurs aux deux autres cas. En effet, on peut calculer les temps moyens (\textit{i.e.} le temps total cumulé divisé par le nombre d'accès R) $T(N)$ dans chaque cas :
 \begin{align*}
     T(1000000) = 227.726\\
     T(1048576) = 252.717\\
@@ -998,9 +1019,338 @@ On constate que pour $N=2^{20}$, les temps sont globalement toujours supérieurs
 Pourquoi une recherche dichotomique dans un tableau de taille $2^{20}$ met un temps environ 10\% plus long qu'un tableau de taille 1 300 000 ?\\
 Ce phénomène est lié au phénomène d'associativité dans le système de cache de l'architecture de la machine.
 En effet, pour un tableau dont la taille est une puissance de 2, la taille de chaque sous-tableau est encore une puissance de 2.
-Or, le nombre de sous-caches ici est aussi une puissance de 2 -- mais beaucoup plus petite, d'où le $2^{20}$ -- donc à chaque accès au milieu du tableau tombe sur une puissance de 2.
+Or, le nombre de sous-caches ici est aussi une puissance de 2 -- mais beaucoup plus petite\footnote{En l'occurrence pour le cache L1 cette puissance est 3 et pour L2 elle vaut 2 !}, d'où le $2^{20}$ -- donc à chaque accès au milieu du tableau tombe sur une puissance de 2.
 Or, on sait que les blocs mis en cache sont mis dans le sous-cache dont le numéro est calculé "modulo le nombre de sous-cache".
 Ainsi, on écrase à chaque étape la valeur précédemment mise en cache.
 On ne fait donc (presque) que des accès hors-cache, d'où le temps plus long.
+
+\subsection{Exercice 8}
+b. On écrit la fonction \texttt{transpose\_naive} suivante:
+\begin{lstlisting}[style=CStyle]
+void transpose_naive(int n, int *mat)
+{
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            int tmp = mat[i * n + j];
+            mat[i * n + j] = mat[j * n + i];
+            mat[j * n + i] = tmp;
+        }
+    }
+}
+\end{lstlisting}
+
+On obtient les résultats suivants:
+\begin{center}
+    \begin{tabular}{| c | c | c | c | c | c |}
+        \hline
+    n & 1024 & 4096 & 8192 & 16384 & 65536 \\
+    \hline
+    temps & 7244426 & 373965628 & 1895640055 & 9090680074 & 171798691840\\
+    \hline
+    \end{tabular}
+\end{center}
+
+c. On écrit ensuite une fonction \texttt{transpose\_blocs} qui transpose une matrice en 4 blocs égaux:
+\begin{lstlisting}[style=CStyle]
+void transpose_blocs(int n, int *mat)
+{
+    for (int I = 0; I < n; I += n / 2)
+    {
+        for (int J = 0; J < n; J += n / 2)
+        {
+            int i_upper = min(I + n / 2, n);
+            int j_upper = min(J + n / 2, n);
+            for (int i = I; i < i_upper; i++)
+            {
+                for (int j = J; j < j_upper; j++)
+                {
+                    int tmp = mat[i * n + j];
+                    mat[i * n + j] = mat[j * n + i];
+                    mat[j * n + i] = tmp;
+                }
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+On obtient les résultats suivants:
+\begin{center}
+    \begin{tabular}{| c | c | c | c | c | c |}
+        \hline
+    n & 1024 & 4096 & 8192 & 16384 & 65536 \\
+    \hline
+    temps & 14578497 & 643229848 & 3429862750 & 17595195907 & 457658083617\\
+    \hline
+    \end{tabular}
+\end{center}
+
+d. Enfin, on définit la fonction \texttt{\_transpose\_rec} comme suit :
+\begin{lstlisting}[style=CStyle]
+void _transpose_rec(int *A, int mAb, int mAe, int nAb, int nAe, int m, int n, int S)
+{
+    int nblines = mAe - mAb;
+    int nbcols = nAe - nAb;
+
+    if ((nblines <= S) && (nbcols <= S))
+    {
+        int iA, jA;
+        for (iA = mAb; iA < mAe; ++iA)
+        {
+            for (jA = nAb; jA < nAe; ++jA)
+            {
+                A[jA * m + iA] = A[iA * n + jA];
+            }
+        }
+    }
+
+    else if (nblines > nbcols)
+    {
+        int mid = nblines / 2;
+        _transpose_rec(A, mAb + mid, mAe, nAb, nAe, m, n, S);
+        _transpose_rec(A, mAb, mAb + mid, nAb, nAe, m, n, S);
+    }
+    else
+    {
+        int mid = nbcols / 2;
+        _transpose_rec(A, mAb, mAe, nAb + mid, nAe, m, n, S);
+        _transpose_rec(A, mAb, mAb, nAb, nAb + mid, m, n, S);
+    }
+}
+\end{lstlisting}
+Et on l'appellera sur \texttt{\_transpose\_rec(mat, 0, n, 0, n, n, n, 4)}\footnote{Le dernier argument S, qui vaut 4 ici, est une valeur de seuil sous laquelle on ne procède plus récursivement mais itérativement comme dans la fonction \texttt{transpose\_naive}.}.\\
+On obtient les résultats suivants:
+\begin{center}
+    \begin{tabular}{| c | c | c | c | c | c |}
+        \hline
+    n & 1024 & 4096 & 8192 & 16384 & 65536 \\
+    \hline
+    temps & 72610 & 627212 & 1604796 & 3357688 & 17023348\\
+    \hline
+    \end{tabular}
+\end{center}
+On regroupe toutes ces valeurs dans une seule figure:
+\begin{figure}[!h]
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=\textwidth,
+            height=10cm,
+            legend pos = north west,
+            xlabel=$n$,
+            ylabel=tics]
+        \addplot[
+            semithick,
+            blue,
+        ] file[skip first] {../c/ch3/ex8a};
+        \addplot[
+            semithick,
+            red,
+        ] file[skip first] {../c/ch3/ex8b};
+        \addplot[
+            semithick,
+            mGreen,
+        ] file[skip first] {../c/ch3/ex8c};
+        \legend{
+            \texttt{transpose\_naive},
+            \texttt{transpose\_blocs},
+            \texttt{transpose\_rec},
+        }
+        \end{axis}
+    \end{tikzpicture}
+\end{figure}
+
+\section{Chapitre 4}
+\subsection{Exercice 1}
+On obtient le code assembleur suivant (avec \texttt{gcc}):
+\begin{lstlisting}[style=customasm]
+_sum:                                   ## @sum
+	.cfi_startproc
+## %bb.0:
+	push	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset rbp, -16
+	mov	rbp, rsp
+	.cfi_def_cfa_register rbp
+	mov	dword ptr [rbp - 4], edi
+	mov	dword ptr [rbp - 8], 0
+	mov	dword ptr [rbp - 12], 0
+LBB0_1:                                 ## =>This Inner Loop Header: Depth=1
+	mov	eax, dword ptr [rbp - 12]
+	cmp	eax, dword ptr [rbp - 4]
+	jge	LBB0_4
+## %bb.2:                               ##   in Loop: Header=BB0_1 Depth=1
+	mov	eax, dword ptr [rbp - 12]
+	add	eax, dword ptr [rbp - 8]
+	mov	dword ptr [rbp - 8], eax
+## %bb.3:                               ##   in Loop: Header=BB0_1 Depth=1
+	mov	eax, dword ptr [rbp - 12]
+	add	eax, 1
+	mov	dword ptr [rbp - 12], eax
+	jmp	LBB0_1
+LBB0_4:
+	mov	eax, dword ptr [rbp - 8]
+	pop	rbp
+	ret
+	.cfi_endproc
+                                        ## -- End function
+	.globl	_main                           ## -- Begin function main
+	.p2align	4, 0x90
+_main:                                  ## @main
+	.cfi_startproc
+## %bb.0:
+	push	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset rbp, -16
+	mov	rbp, rsp
+	.cfi_def_cfa_register rbp
+	sub	rsp, 16
+	mov	dword ptr [rbp - 4], 100000000
+	mov	edi, dword ptr [rbp - 4]
+	call	_sum
+	xor	eax, eax
+	add	rsp, 16
+	pop	rbp
+	ret
+	.cfi_endproc
+                                        ## -- End function
+.subsections_via_symbols
+\end{lstlisting}
+
+\subsection{Exercice 2}
+Dans la fonction \texttt{sum}, on commence par sauvegarder la dernière valeur du pointeur \texttt{rbp} et empile cette valeur. Puis, tout est stocké dans la RAM : \texttt{edi} représente l'argument de la fonction (de manière informelle, c'est \texttt{count}), puis on stocke les valeurs de \texttt{s} et \texttt{i}, qui valent 0, au adresses qui suivent.
+Pour le reste, on travaille sur des registres.
+
+
+\subsection{Exercice 3}
+a. Les trois instructions \texttt{mov}, \texttt{cmp} et \texttt{jge} correspondent aux instructions \texttt{for(int i=0; i<count; i++)} (la plupart du temps, \texttt{eax} représente la valeur de \texttt{i}, sauf à la toute fin où \texttt{eax} prend la valeur de \texttt{s}).\\
+L'initialisation (\texttt{int i = 0}) est l'instruction \texttt{mov	eax, dword ptr [rbp - 12]}.
+En particulier, le saut conditionnel ne se produit que si l'instruction \texttt{cmp	eax, dword ptr [rbp - 4]} est vérifiée, \textit{i.e.} lorsque \texttt{eax $\geq$ dword ptr [rbp - 4]}. Autrement dit, on sort de la boucle dès que \texttt{i} $\geq$ \texttt{count}.\\
+Enfin, l'incrémentation se produit avec l'instruction \texttt{add	eax, 1}.\\
+
+b. L'appel à la fonction \texttt{sum} se fait avec l'instruction \texttt{call	\_sum
+}.\\
+
+c. L'instruction \texttt{call} va chercher l'argument de la fonction dans le registre \texttt{edi}.\\
+
+d. L'instruction \texttt{ret} va chercher la valeur de retour dans le registre \texttt{eax}.
+
+\subsection{Exercice 4}
+Premier code : \texttt{rax} vaut 47 à la fin et est équivalent au code C suivant:
+\begin{lstlisting}[style=CStyle]
+int i = 12;
+i = i + i;
+i = i + i;
+i--;
+\end{lstlisting}
+Deuxième code : \texttt{rax} vaut 123 à la fin et est équivalent au code suivant:
+\begin{lstlisting}[style=CStyle]
+int a = 12;
+for(int i = 0; i<10; i++){
+    int a += 10;
+}
+\end{lstlisting}
+Troisième code : \texttt{rax} vaut 143 à la fin et est équivalent au code suivant:
+\begin{lstlisting}[style=CStyle]
+int a = 12;
+int b;
+for(b=13; b>0; b--){
+    a += 10;
+}
+\end{lstlisting}
+
+\subsection{Exercice 5}
+Premier code : \texttt{rax} vaut 15 au niveau de \texttt{nop}.
+Deuxième code : \texttt{rax} vaut 12.
+Troisième code : \texttt{rax} vaut \texttt{rbx}.
+
+\subsection{Exercice 6}
+a. On obtient le code assembleur suivante (avec \texttt{objdump}):
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+0000000000000000 <_main>:
+    0: 55                           	push	rbp
+    1: 48 89 e5                     	mov	rbp, rsp
+    4: c7 45 fc 00 00 00 00         	mov	dword ptr [rbp - 4], 0
+    b: c7 45 f4 00 00 00 00         	mov	dword ptr [rbp - 12], 0
+   12: c7 45 f0 00 00 00 00         	mov	dword ptr [rbp - 16], 0
+   19: 83 7d f0 64                  	cmp	dword ptr [rbp - 16], 100
+   1d: 0f 8d 17 00 00 00            	jge	0x3a <_main+0x3a>
+   23: 8b 45 f0                     	mov	eax, dword ptr [rbp - 16]
+   26: 03 45 f4                     	add	eax, dword ptr [rbp - 12]
+   29: 89 45 f4                     	mov	dword ptr [rbp - 12], eax
+   2c: 8b 45 f0                     	mov	eax, dword ptr [rbp - 16]
+   2f: 83 c0 01                     	add	eax, 1
+   32: 89 45 f0                     	mov	dword ptr [rbp - 16], eax
+   35: e9 df ff ff ff               	jmp	0x19 <_main+0x19>
+   3a: 8b 45 fc                     	mov	eax, dword ptr [rbp - 4]
+   3d: 5d                           	pop	rbp
+   3e: c3                           	ret
+\end{lstlisting}
+
+b. Il y a donc 17 instructions et le programme occupe \texttt{0x3e}+1 soit 63 octets en mémoire.\\
+
+c. Il suffit de lire:
+\begin{center}
+\begin{lstlisting}[style=customasm]
+1: 48 89 e5             	mov	rbp, rsp
+\end{lstlisting}
+\end{center}
+
+d. Les instructions qui occupent le plus de mémoire sont les instructions \texttt{mov} correspondant aux initialisations des variables \texttt{i} (2 fois) et \texttt{j} à 0.
+Comme ce sont des \texttt{int}, on réserve immédiatement 4 octets (32 bits): c'est de l'adressage immédiat.
+
+\subsection{Exercice 7}
+a. Le stockage en RAM des valeurs de \texttt{i} et \texttt{s} initialisées à 0 est enlevé. À la place, on trouve la commande \texttt{test edi, edi} qui agit comme un \texttt{bitwise and} ("et" bit à bit).
+La valeur de véracité de \texttt{edi} $\wedge$ \texttt{edi} est toujours \textit{vrai} (donc le test vaut 1), sauf quand $\texttt{edi}=0$, auquel cas la valeur est \textit{faux} (et le test vaut 0).
+Cela permet de mettre à jour tous les flags concernés (par exemple ZF vaudra 0 si \texttt{edi} est non nul), mais également de stocker les valeurs de \texttt{i} et \texttt{s} dans des registres.\\
+
+b. Dans le \texttt{main}, on enlève des opérations inutiles telles que \texttt{sub	rsp, 16} et \texttt{add	rsp, 16} et l'assignation \texttt{int count = 100000000} est transcrite en une seule commande. Suivant les architectures, l'appel de la fonction \texttt{sum} est oublié aussi, puisque le résultat est inutilisé, de même que l'instanciation de \texttt{count}.\\
+
+c. On modifie le \texttt{main} :
+\begin{lstlisting}[style=CStyle]
+int main()
+{
+    int a = 0;
+    int count = 100000000;
+    a += sum(count);
+}
+\end{lstlisting}
+
+d. Un changement est l'utilisation de la commande \texttt{lea} qui fait presque la même opération que \texttt{mov} : \texttt{lea dest source} met l'adresse de \texttt{source} dans \texttt{dest}. Ainsi, \texttt{lea dest [source]} est équivalent à \texttt{mov dest source}, et c'est ce qui est utilisé dans le code optimisé.
+\texttt{lea} est pratique car elle permet de faire directement les calculs à la volée dans l'argument, comme par exemple \texttt{lea ecx, [edx + eax*4]}. \\
+On note aussi l'utilisation du registre \textit{destination index} \texttt{rdi} dans le code optimisé, qui n'apparait pas dans le code non optimisé.\\
+Concernant la boucle, elle est donnée par le code suivant:
+\begin{lstlisting}[style=customasm]
+lea	eax, [rdi - 1]
+lea	ecx, [rdi - 2]
+imul	rcx, rax
+shr	rcx
+lea	eax, [rcx + rdi]
+add	eax, -1
+pop	rbp
+ret
+\end{lstlisting}
+Le compilateur effectue directement l'opération\footnote{La division par 2 se fait avec l'opération \textit{shift right}, \texttt{shr}, parfois notée \texttt{>>} dans d'autres langages.} :
+\begin{equation*}
+    \texttt{rcx} = \frac{(\texttt{rdi}-1)(\texttt{rdi}-2)}{2} + (\texttt{rdi}-1) = \displaystyle\sum_{i=1}^{\texttt{rdi-1}}i
+\end{equation*}
+Enfin, grâce au test sur \texttt{edi}, on saute directement à la fin de la fonction si $\texttt{edi} = 0$, ce qui n'est pas fait dans le code non optimisé, puisqu'on utilise un \texttt{cmp} peu importe la valeur de \texttt{edi}.\\
+
+e. La seule différence obtenue\footnote{Tous les codes sont sur \href{https://github.com/VTrelat/ComputerArchitecture/tree/main/c}{GitHub}.} est la suppression de l'appel à la fonction \texttt{sum} et l'instanciation de \texttt{count} par \texttt{edi}.\\
+
+f. Comme \texttt{count} n'est plus instancié dans le code assembleur avec un niveau 2 d'optimisation, on n'observe aucun changement (\texttt{essai avec \texttt{count=5}}).
+
+g. L'assembleur semble utiliser des méthodes complexes similaires au cas de la somme des entiers. On sait par exemple que la somme des carrés peut s'écrire de la manière suivante :
+\begin{equation*}
+    \sum_{i=1}^{n-1} i^2 = \frac{n(n-1)(2n-1)}{6}
+\end{equation*}
+De même, la sommes des cubes s'écrit :
+\begin{equation*}
+    \sum_{i=1}^{n-1} i^2 = (\frac{(n-1)(n-2)}{2})^2
+\end{equation*}
+On reconnait des opérations similaires au cas de la somme des entiers, néanmoins les expressions ci-dessus ne ressortent pas explicitement.
+
+\subsection{Exercice 8}
 
 \end{document}
