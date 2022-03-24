@@ -1345,12 +1345,72 @@ g. L'assembleur semble utiliser des méthodes complexes similaires au cas de la 
 \begin{equation*}
     \sum_{i=1}^{n-1} i^2 = \frac{n(n-1)(2n-1)}{6}
 \end{equation*}
-De même, la sommes des cubes s'écrit :
+De même, la somme des cubes s'écrit :
 \begin{equation*}
     \sum_{i=1}^{n-1} i^2 = (\frac{(n-1)(n-2)}{2})^2
 \end{equation*}
-On reconnait des opérations similaires au cas de la somme des entiers, néanmoins les expressions ci-dessus ne ressortent pas explicitement.
+On reconnait des opérations similaires au cas de la somme des entiers, néanmoins les expressions ci-dessus ne ressortent pas explicitement.\\
 
 \subsection{Exercice 8}
+
+a. On souhaite faire l'opération $\texttt{rax} \leftarrow \min(4~\texttt{rax}+5, 8~\texttt{rbx}+7)$:
+\begin{lstlisting}[style=customasm]
+; rax <- 4*rax+5
+mul rax, 4
+add rax, 5
+
+; rbx <- 8*rbx+7
+mul rbx, 8
+add rbx, 7
+
+mov dword ptr [rbp - 4], rax
+mov dword ptr [rbp - 8], rbx
+mov rax, dword ptr [rbp - 4]
+
+cmp rax, dword ptr [rbp - 8] ; performs 4*rax+5 - 8*rbx+7
+jge LBB0_1 ; jump if >= 0
+
+jmp LBB0_2
+
+LBB0_1 ; case 4*rax+5 >= 8*rbx+7
+mov rax, dword ptr [rbp - 8] ; rax <- 8*rbx+7
+
+LBB0_2 ; case 4*rax+5 < 8*rbx+7 but rax already holds 4*rax+5
+skip ahead
+\end{lstlisting}
+
+b. On souhaite faire l'opération suivante:\\
+\begin{lstlisting}[style=CStyle]
+while(rax < rcx){rax += rbx;}
+\end{lstlisting}
+On écrit le code assembleur suivant:\\
+\begin{lstlisting}[style=customasm]
+LBB0_1
+cmp rax, rcx
+jge LBB0_2 ; rax >= rcx
+
+add rax, rbx ; rax <- rax + rbx
+jmp LBB0_1
+
+LBB0_2
+skip ahead
+\end{lstlisting}
+
+c. On veut effectuer l'opération suivante:
+\begin{lstlisting}[style=CStyle]
+if(rax % 4 == 0){rcx = 1;}
+\end{lstlisting}
+
+On écrit le code assembleur suivant:
+\begin{lstlisting}[style=customasm]
+div 4
+cmp rdx, 0
+jne LBB0_1
+mov rcx, 1
+
+LBB0_1
+skip ahead
+\end{lstlisting}
+Il est nécessaire de préciser comment fonctionne \texttt{div}. Lorsqu'on effectue l'opération \texttt{div $a$}, on divise l'entier représenté par le mot écrit sur le segment \texttt{rdx:rax} par $a$. Le quotient est stocké dans \texttt{rax} et le reste dans \texttt{rdx}, d'où la comparaison directe sur \texttt{rdx}.
 
 \end{document}
