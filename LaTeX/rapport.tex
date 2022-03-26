@@ -1017,7 +1017,7 @@ On constate que pour $N=2^{20}$, les temps sont globalement toujours supérieurs
 \end{align*}
 
 Pourquoi une recherche dichotomique dans un tableau de taille $2^{20}$ met un temps environ 10\% plus long qu'un tableau de taille 1 300 000 ?\\
-Ce phénomène est lié au phénomène d'associativité dans le système de cache de l'architecture de la machine.
+Ce phénomène est lié au principe d'associativité dans le système de cache de l'architecture de la machine.
 En effet, pour un tableau dont la taille est une puissance de 2, la taille de chaque sous-tableau est encore une puissance de 2.
 Or, le nombre de sous-caches ici est aussi une puissance de 2 -- mais beaucoup plus petite\footnote{En l'occurrence pour le cache L1 cette puissance est 3 et pour L2 elle vaut 2 !}, d'où le $2^{20}$ -- donc à chaque accès au milieu du tableau tombe sur une puissance de 2.
 Or, on sait que les blocs mis en cache sont mis dans le sous-cache dont le numéro est calculé "modulo le nombre de sous-cache".
@@ -1160,19 +1160,16 @@ On regroupe toutes ces valeurs dans une seule figure:
         \end{axis}
     \end{tikzpicture}
 \end{figure}
+\pagebreak
 
 \section{Chapitre 4}
 \subsection{Exercice 1}
 On obtient le code assembleur suivant (avec \texttt{gcc}):
 \begin{lstlisting}[style=customasm]
 _sum:                                   ## @sum
-	.cfi_startproc
 ## %bb.0:
 	push	rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset rbp, -16
 	mov	rbp, rsp
-	.cfi_def_cfa_register rbp
 	mov	dword ptr [rbp - 4], edi
 	mov	dword ptr [rbp - 8], 0
 	mov	dword ptr [rbp - 12], 0
@@ -1193,18 +1190,13 @@ LBB0_4:
 	mov	eax, dword ptr [rbp - 8]
 	pop	rbp
 	ret
-	.cfi_endproc
                                         ## -- End function
 	.globl	_main                           ## -- Begin function main
 	.p2align	4, 0x90
 _main:                                  ## @main
-	.cfi_startproc
 ## %bb.0:
 	push	rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset rbp, -16
 	mov	rbp, rsp
-	.cfi_def_cfa_register rbp
 	sub	rsp, 16
 	mov	dword ptr [rbp - 4], 100000000
 	mov	edi, dword ptr [rbp - 4]
@@ -1213,9 +1205,7 @@ _main:                                  ## @main
 	add	rsp, 16
 	pop	rbp
 	ret
-	.cfi_endproc
                                         ## -- End function
-.subsections_via_symbols
 \end{lstlisting}
 
 \subsection{Exercice 2}
@@ -1411,6 +1401,8 @@ mov rcx, 1
 LBB0_1
 skip ahead
 \end{lstlisting}
-Il est nécessaire de préciser comment fonctionne \texttt{div}. Lorsqu'on effectue l'opération \texttt{div $a$}, on divise l'entier représenté par le mot écrit sur le segment \texttt{rdx:rax} par $a$. Le quotient est stocké dans \texttt{rax} et le reste dans \texttt{rdx}, d'où la comparaison directe sur \texttt{rdx}.
+Il est nécessaire de préciser comment fonctionne \texttt{div}.
+Lorsqu'on effectue l'opération \texttt{div $a$}, on divise l'entier représenté par le mot écrit sur le segment \texttt{rdx:rax} par $a$. Le quotient est stocké dans \texttt{rax} et le reste dans \texttt{rdx}, d'où la comparaison directe sur \texttt{rdx}.
+
 
 \end{document}
