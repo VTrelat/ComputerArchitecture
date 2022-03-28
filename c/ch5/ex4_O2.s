@@ -1,5 +1,4 @@
 main:
-	endbr64
 	sub	rsp, 8
 	xor	r9d, r9d
 	xor	r8d, r8d
