@@ -1504,7 +1504,95 @@ On se trompe donc qualitativement trois fois plus souvent dans le deuxième cas.
 e. Avec \texttt{O1} ou \texttt{O2} on obtient presque les mêmes temps pour les deux cas.\\
 
 \subsection{Exercice 4}
+On donne ci-dessous les deux codes obtenus:\\
 
+\noindent\begin{minipage}{.45\textwidth}
+    \begin{lstlisting}[caption=Optimisation O1, style=customasm]
+    main:
+        sub	rsp, 8
+        mov	r9d, 0
+        mov	r8d, 0
+        mov	esi, 0
+        mov	ecx, 0
+        mov	edi, 1
+    .L2:
+        mov	eax, edi
+        imul	eax, edi
+        imul	eax, eax
+        add	ecx, eax
+        mov	eax, ecx
+        imul	eax, ecx
+        mov	edx, eax
+        imul	edx, ecx
+        imul	edx, ecx
+        add	esi, edx
+        imul	eax, esi
+        imul	eax, esi
+        add	r8d, eax
+        mov	eax, ecx
+        cdq
+        idiv	esi
+        add	eax, r9d
+        lea	r9d, [r8+rax]
+        add	edi, 1
+        cmp	edi, 10
+        jne	.L2
+        mov	edx, r9d
+        lea	rsi, .LC0[rip]
+        mov	edi, 1
+        mov	eax, 0
+        call	__printf_chk@PLT
+        mov	eax, 0
+        add	rsp, 8
+        ret
+    \end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.45\textwidth}
+    \begin{lstlisting}[caption=Optimisation O2, style=customasm]
+    main:
+        sub	rsp, 8
+        xor	r9d, r9d
+        xor	r8d, r8d
+        xor	esi, esi
+        xor	ecx, ecx
+        mov	edi, 1
+    .L2:
+        mov	eax, edi
+        imul	eax, edi
+        add	edi, 1
+        imul	eax, eax
+        add	ecx, eax
+        mov	eax, ecx
+        imul	eax, ecx
+        mov	edx, eax
+        imul	edx, ecx
+        imul	edx, ecx
+        add	esi, edx
+        imul	eax, esi
+        imul	eax, esi
+        add	r8d, eax
+        mov	eax, ecx
+        cdq
+        idiv	esi
+        add	eax, r9d
+        lea	r9d, [r8+rax]
+        cmp	edi, 10
+        jne	.L2
+        mov	edx, r9d
+        lea	rsi, .LC0[rip]
+        mov	edi, 1
+        xor	eax, eax
+        call	__printf_chk@PLT
+        xor	eax, eax
+        add	rsp, 8
+        ret
+    \end{lstlisting}
+\end{minipage}
+
+Première différence : au niveau O2, on utilise plutôt des instructions comme \texttt{xor rax, rax} pour remplacer les instructions \texttt{mov rax, 0} qui sont plus rapides et prennent moins de place en mémoire.\\
+
+Deuxième différence : le niveau O2 déplace des instructions afin de réduire les bulles.
+Par exemple, la ligne 11 du code O2 correspond à la ligne 27 du code O1.\\
 
 % Après exo 4, aller sur wikichip et étudier la description du pipeline de l'architecture skylake.
 
