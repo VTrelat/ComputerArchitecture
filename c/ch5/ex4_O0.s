@@ -1,66 +1,73 @@
-	.section	__TEXT,__text,regular,pure_instructions
-	.build_version macos, 12, 0	sdk_version 12, 3
+	.file	"ex4.c"
 	.intel_syntax noprefix
-	.globl	_main                           ## -- Begin function main
-	.p2align	4, 0x90
-_main:                                  ## @main
-## %bb.0:
+	.text
+	.section	.rodata
+.LC0:
+	.string	"%d\n"
+	.text
+	.globl	main
+	.type	main, @function
+main:
+	endbr64
 	push	rbp
 	mov	rbp, rsp
 	sub	rsp, 32
-	mov	dword ptr [rbp - 4], 0
-	mov	dword ptr [rbp - 12], 0
-	mov	dword ptr [rbp - 16], 0
-	mov	dword ptr [rbp - 20], 0
-	mov	dword ptr [rbp - 24], 0
-	mov	dword ptr [rbp - 8], 1
-LBB0_1:                                 ## =>This Inner Loop Header: Depth=1
-	cmp	dword ptr [rbp - 8], 10
-	jge	LBB0_4
-## %bb.2:                               ##   in Loop: Header=BB0_1 Depth=1
-	mov	eax, dword ptr [rbp - 8]
-	imul	eax, dword ptr [rbp - 8]
-	imul	eax, dword ptr [rbp - 8]
-	imul	eax, dword ptr [rbp - 8]
-	add	eax, dword ptr [rbp - 12]
-	mov	dword ptr [rbp - 12], eax
-	mov	eax, dword ptr [rbp - 12]
-	imul	eax, dword ptr [rbp - 12]
-	imul	eax, dword ptr [rbp - 12]
-	imul	eax, dword ptr [rbp - 12]
-	add	eax, dword ptr [rbp - 16]
-	mov	dword ptr [rbp - 16], eax
-	mov	eax, dword ptr [rbp - 12]
-	imul	eax, dword ptr [rbp - 12]
-	imul	eax, dword ptr [rbp - 16]
-	imul	eax, dword ptr [rbp - 16]
-	add	eax, dword ptr [rbp - 20]
-	mov	dword ptr [rbp - 20], eax
-	mov	eax, dword ptr [rbp - 12]
+	mov	DWORD PTR -16[rbp], 0
+	mov	DWORD PTR -12[rbp], 0
+	mov	DWORD PTR -8[rbp], 0
+	mov	DWORD PTR -4[rbp], 0
+	mov	DWORD PTR -20[rbp], 1
+	jmp	.L2
+.L3:
+	mov	eax, DWORD PTR -20[rbp]
+	imul	eax, eax
+	imul	eax, DWORD PTR -20[rbp]
+	imul	eax, DWORD PTR -20[rbp]
+	add	DWORD PTR -16[rbp], eax
+	mov	eax, DWORD PTR -16[rbp]
+	imul	eax, eax
+	imul	eax, DWORD PTR -16[rbp]
+	imul	eax, DWORD PTR -16[rbp]
+	add	DWORD PTR -12[rbp], eax
+	mov	eax, DWORD PTR -16[rbp]
+	imul	eax, eax
+	imul	eax, DWORD PTR -12[rbp]
+	imul	eax, DWORD PTR -12[rbp]
+	add	DWORD PTR -8[rbp], eax
+	mov	eax, DWORD PTR -16[rbp]
 	cdq
-	idiv	dword ptr [rbp - 16]
-	add	eax, dword ptr [rbp - 24]
-	mov	dword ptr [rbp - 24], eax
-	mov	eax, dword ptr [rbp - 20]
-	add	eax, dword ptr [rbp - 24]
-	mov	dword ptr [rbp - 24], eax
-## %bb.3:                               ##   in Loop: Header=BB0_1 Depth=1
-	mov	eax, dword ptr [rbp - 8]
-	add	eax, 1
-	mov	dword ptr [rbp - 8], eax
-	jmp	LBB0_1
-LBB0_4:
-	mov	esi, dword ptr [rbp - 24]
-	lea	rdi, [rip + L_.str]
-	mov	al, 0
-	call	_printf
-	xor	eax, eax
-	add	rsp, 32
-	pop	rbp
+	idiv	DWORD PTR -12[rbp]
+	add	DWORD PTR -4[rbp], eax
+	mov	eax, DWORD PTR -8[rbp]
+	add	DWORD PTR -4[rbp], eax
+	add	DWORD PTR -20[rbp], 1
+.L2:
+	cmp	DWORD PTR -20[rbp], 9
+	jle	.L3
+	mov	eax, DWORD PTR -4[rbp]
+	mov	esi, eax
+	lea	rdi, .LC0[rip]
+	mov	eax, 0
+	call	printf@PLT
+	mov	eax, 0
+	leave
 	ret
-                                        ## -- End function
-	.section	__TEXT,__cstring,cstring_literals
-L_.str:                                 ## @.str
-	.asciz	"%d\n"
-
-.subsections_via_symbols
+	.size	main, .-main
+	.ident	"GCC: (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0"
+	.section	.note.GNU-stack,"",@progbits
+	.section	.note.gnu.property,"a"
+	.align 8
+	.long	 1f - 0f
+	.long	 4f - 1f
+	.long	 5
+0:
+	.string	 "GNU"
+1:
+	.align 8
+	.long	 0xc0000002
+	.long	 3f - 2f
+2:
+	.long	 0x3
+3:
+	.align 8
+4:

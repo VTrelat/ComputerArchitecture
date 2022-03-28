@@ -1,22 +1,38 @@
-	.section	__TEXT,__text,regular,pure_instructions
-	.build_version macos, 12, 0	sdk_version 12, 3
-	.intel_syntax noprefix
-	.globl	_main                           ## -- Begin function main
-	.p2align	4, 0x90
-_main:                                  ## @main
-## %bb.0:
-	push	rbp
-	mov	rbp, rsp
-	lea	rdi, [rip + L_.str]
-	mov	esi, 141218144
+main:
+	endbr64
+	sub	rsp, 8
+	xor	r9d, r9d
+	xor	r8d, r8d
+	xor	esi, esi
+	xor	ecx, ecx
+	mov	edi, 1
+.L2:
+	mov	eax, edi
+	imul	eax, edi
+	add	edi, 1
+	imul	eax, eax
+	add	ecx, eax
+	mov	eax, ecx
+	imul	eax, ecx
+	mov	edx, eax
+	imul	edx, ecx
+	imul	edx, ecx
+	add	esi, edx
+	imul	eax, esi
+	imul	eax, esi
+	add	r8d, eax
+	mov	eax, ecx
+	cdq
+	idiv	esi
+	add	eax, r9d
+	lea	r9d, [r8+rax]
+	cmp	edi, 10
+	jne	.L2
+	mov	edx, r9d
+	lea	rsi, .LC0[rip]
+	mov	edi, 1
 	xor	eax, eax
-	call	_printf
+	call	__printf_chk@PLT
 	xor	eax, eax
-	pop	rbp
+	add	rsp, 8
 	ret
-                                        ## -- End function
-	.section	__TEXT,__cstring,cstring_literals
-L_.str:                                 ## @.str
-	.asciz	"%d\n"
-
-.subsections_via_symbols
