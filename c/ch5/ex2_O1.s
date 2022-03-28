@@ -163,30 +163,30 @@ _main:                                  ## @main
 	call	_srand
 	mov	edi, 10000000
 	call	_make_random_table
-	mov	r14, rax
+	mov	r12, rax
 	lea	rdi, [rip + L_str]
 	call	_puts
-	mov	ebx, 25
-	lea	r15, [rip + L_.str.2]
-	lea	r12, [rip + _count_less_than]
+	lea	r14, [rip + L_.str.2]
+	lea	r15, [rip + _count_less_than]
+	xor	ebx, ebx
 	.p2align	4, 0x90
 LBB3_1:                                 ## =>This Inner Loop Header: Depth=1
-	mov	rdi, r15
+	mov	rdi, r14
 	mov	esi, ebx
 	xor	eax, eax
 	call	_printf
-	mov	rdi, r14
+	mov	rdi, r12
 	mov	esi, 10000000
 	mov	edx, ebx
-	mov	rcx, r12
+	mov	rcx, r15
 	mov	r8d, 100
 	mov	r9d, 1000
 	call	_print_timing
 	add	ebx, 1
-	cmp	ebx, 33
+	cmp	ebx, 100
 	jne	LBB3_1
 ## %bb.2:
-	mov	rdi, r14
+	mov	rdi, r12
 	call	_free
 	xor	eax, eax
 	pop	rbx

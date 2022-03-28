@@ -1484,5 +1484,28 @@ b. On obtient les résultats suivants:
     \end{tikzpicture}
 \end{figure}
 
+Le compilateur s'est débarassé\footnote{En utilisant un \texttt{setl}} du saut conditionnel (comparaison avec le seuil). Ainsi, on réduit énormément la bulle par rapport au code non optimisé. On obtient donc une exécution quasi-constante.\\
+
+\subsection{Exercice 3}
+a. On peut réaliser deux tests successifs avec deux sauts conditionnels. Si le premier n'est pas vérifié, on saute directement à la suite. Sinon, on effectue le second test.\\
+
+b. C'est concluant :\\
+\texttt{
+count1: 152644587 tics\\
+count2: 183140942 tics\\
+}
+
+c. Il y a un facteur multiplicatif de $1.2$ (soit 20\% de différence).\\
+
+d. Dans le premier cas, le prédicteur a environ une chance sur quatre de se tromper. Puis, il a environ une chance sur trois de se tromper au deuxième test, soit au total une chance sur douze.
+Dans le deuxième cas on a environ une chance sur deux de se tromper au premier test, puis encore une chance sur deux au deuxième test, soit environ une chance sur quatre.
+On se trompe donc qualitativement trois fois plus souvent dans le deuxième cas.\\
+
+e. Avec \texttt{O1} ou \texttt{O2} on obtient presque les mêmes temps pour les deux cas.\\
+
+\subsection{Exercice 4}
+
+
+% Après exo 4, aller sur wikichip et étudier la description du pipeline de l'architecture skylake.
 
 \end{document}
