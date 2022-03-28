@@ -14,6 +14,31 @@
 \usepackage{framed}
 \usepackage{xcolor,colortbl}
 
+%__________________________________________
+
+% Node styles
+\tikzstyle{white node}=[fill=none, draw=black, shape=circle, tikzit fill=white, tikzit draw=black]
+\tikzstyle{red node}=[fill={rgb,255: red,232; green,118; blue,188}, draw=black, shape=circle, tikzit fill={rgb,255: red,232; green,118; blue,188}, tikzit draw=black]
+\tikzstyle{blue node}=[fill={rgb,255: red,179; green,191; blue,255}, draw=black, shape=circle, tikzit fill={rgb,255: red,179; green,191; blue,255}, tikzit draw=black]
+\tikzstyle{green node}=[fill={rgb,255: red,201; green,255; blue,189}, draw=black, shape=circle, tikzit fill={rgb,255: red,201; green,255; blue,189}, tikzit draw=black]
+
+\tikzstyle{arrow}=[>]
+\tikzstyle{new style 0}=[fill=none, draw=red, shape=circle, tikzit fill=none]
+\tikzstyle{arrow}=[<--]
+\tikzstyle{new edge style 2}=[- - -]
+
+% Edge styles
+\tikzstyle{right arrow}=[->]
+\tikzstyle{right red arrow}=[->, draw=red, tikzit draw=red]
+\tikzstyle{left arrow}=[<-]
+\tikzstyle{left red arrow}=[<-, draw=red, tikzit draw=red]
+\tikzstyle{right dashed arrow}=[->, dashed=1, dash pattern=on 1mm off 1mm, draw=red]
+\tikzstyle{left dashed arrow}=[<-, dashed=1, dash pattern=on 1mm off 1mm, draw=red]
+\tikzstyle{blue fill}=[-, fill={rgb,255: red,179; green,191; blue,255}, draw=none, tikzit draw=none, tikzit fill={rgb,255: red,213; green,207; blue,255}]
+\tikzstyle{green fill}=[-, fill={rgb,255: red,201; green,255; blue,189}, draw=none, tikzit draw=none, tikzit fill={rgb,255: red,213; green,255; blue,208}]
+\tikzstyle{red fill}=[-, fill={rgb,255: red,232; green,118; blue,188}, draw=none, tikzit draw=none, tikzit fill={rgb,255: red,232; green,118; blue,118}]
+
+%__________________________________________
 
 \usetikzlibrary{babel}
 \usetikzlibrary{backgrounds}
@@ -1393,7 +1418,8 @@ if(rax % 4 == 0){rcx = 1;}
 
 On écrit le code assembleur suivant:
 \begin{lstlisting}[style=customasm]
-div 4
+mov edi, 4
+div edi
 cmp rdx, 0
 jne LBB0_1
 mov rcx, 1
@@ -1402,7 +1428,22 @@ LBB0_1
 skip ahead
 \end{lstlisting}
 Il est nécessaire de préciser comment fonctionne \texttt{div}.
-Lorsqu'on effectue l'opération \texttt{div $a$}, on divise l'entier représenté par le mot écrit sur le segment \texttt{rdx:rax} par $a$. Le quotient est stocké dans \texttt{rax} et le reste dans \texttt{rdx}, d'où la comparaison directe sur \texttt{rdx}.
+Lorsqu'on effectue l'opération \texttt{div $a$} où $a$ est un registre, on divise l'entier représenté par le mot écrit sur le segment \texttt{rdx:rax} par la valeur dans $a$. Le quotient est stocké dans \texttt{rax} et le reste dans \texttt{rdx}, d'où la comparaison directe sur \texttt{rdx}.
+
+\pagebreak
+\section{Chapitre 5}
+\subsection{Exercice 1}
+a. Le premier saut conditionnel (l.4-5 en assembleur) correspond au \textit{if} (l.5 en C).\\
+Le deuxième saut conditionnel (l.8-9 en assembleur) correspond à la comparaison \texttt{i < n} dans la boucle \textit{for} (l.4 en C).\\
+
+b. \begin{itemize}
+    \item[(a)] Les erreurs de prédiction se font aux indices 3, 4, 8, 9, 11, 13, 15, 16, 17, 18, 19
+    \item[(b)] Les erreurs de prédiction se font aux indices 0, 1, 3, 4, 8, 9, 11, 13, 15, 16, 17, 18, 19
+\end{itemize}
+
+\subsection{Exercice 2}
+a. 
+
 
 
 \end{document}
