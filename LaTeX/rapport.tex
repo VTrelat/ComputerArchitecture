@@ -1442,7 +1442,22 @@ b. \begin{itemize}
 \end{itemize}
 
 \subsection{Exercice 2}
-a. 
+a. On obtient les résultats suivants:
+\begin{figure}[!h]
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=\textwidth,
+            height=7cm,
+            legend pos = north west,
+            xlabel=threshold,
+            ylabel=tics]
+        \addplot[
+            semithick,
+            blue,
+        ] file[skip first] {../c/ch5/ex2a};
+        \end{axis}
+    \end{tikzpicture}
+\end{figure}
 
 
 
