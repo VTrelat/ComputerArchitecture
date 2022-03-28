@@ -62,7 +62,7 @@ int main(void)
     for (register int i = 0; i < 100; i++)
     {
         printf("%d ", i);
-        print_timing(table, 10000000, i, count_less_than, 10, 100);
+        print_timing(table, 10000000, i, count_less_than, 100, 1000);
     }
     free(table);
 

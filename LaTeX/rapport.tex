@@ -1459,6 +1459,30 @@ a. On obtient les résultats suivants:
     \end{tikzpicture}
 \end{figure}
 
+\begin{itemize}
+    \item[(a)] Oui !\\
+    \item[(b)] Le facteur multiplicatif est d'environ 3.\\
+    \item[(c)] Le fait que le pire cas se trouve pour des valeurs de seuil autour de 50 est dû au fait que pour ces valeurs, le prédicteur a une chance sur deux de se tromper. Le nombre de pénalité est donc plus élevé et l'exécution est plus longue.\\
+\end{itemize}
+
+b. On obtient les résultats suivants:
+\begin{figure}[!h]
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=\textwidth,
+            height=7cm,
+            legend pos = north west,
+            xlabel=threshold,
+            ymin = 12000000,
+            ymax = 18500000,
+            ylabel=tics]
+        \addplot[
+            semithick,
+            blue,
+        ] file[skip first] {../c/ch5/ex2b};
+        \end{axis}
+    \end{tikzpicture}
+\end{figure}
 
 
 \end{document}

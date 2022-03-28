@@ -4,7 +4,7 @@ int sum(int count)
     int i;
     for (i = 0; i < count; i++)
     {
-        s += i;
+        s += i * i;
     }
     return s;
 }
