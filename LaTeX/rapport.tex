@@ -1504,7 +1504,54 @@ On se trompe donc qualitativement trois fois plus souvent dans le deuxième cas.
 e. Avec \texttt{O1} ou \texttt{O2} on obtient presque les mêmes temps pour les deux cas.\\
 
 \subsection{Exercice 4}
-On donne ci-dessous les deux codes obtenus:\\
+On donne ci-dessous les deux codes obtenus pour les niveaux O0, O1 et O2:\\
+
+\begin{lstlisting}[caption=Optimisation O0, style=customasm]
+main:
+	push	rbp
+	mov	rbp, rsp
+	sub	rsp, 32
+	mov	DWORD PTR -16[rbp], 0
+	mov	DWORD PTR -12[rbp], 0
+	mov	DWORD PTR -8[rbp], 0
+	mov	DWORD PTR -4[rbp], 0
+	mov	DWORD PTR -20[rbp], 1
+	jmp	.L2
+.L3:
+	mov	eax, DWORD PTR -20[rbp]
+	imul	eax, eax
+	imul	eax, DWORD PTR -20[rbp]
+	imul	eax, DWORD PTR -20[rbp]
+	add	DWORD PTR -16[rbp], eax
+	mov	eax, DWORD PTR -16[rbp]
+	imul	eax, eax
+	imul	eax, DWORD PTR -16[rbp]
+	imul	eax, DWORD PTR -16[rbp]
+	add	DWORD PTR -12[rbp], eax
+	mov	eax, DWORD PTR -16[rbp]
+	imul	eax, eax
+	imul	eax, DWORD PTR -12[rbp]
+	imul	eax, DWORD PTR -12[rbp]
+	add	DWORD PTR -8[rbp], eax
+	mov	eax, DWORD PTR -16[rbp]
+	cdq
+	idiv	DWORD PTR -12[rbp]
+	add	DWORD PTR -4[rbp], eax
+	mov	eax, DWORD PTR -8[rbp]
+	add	DWORD PTR -4[rbp], eax
+	add	DWORD PTR -20[rbp], 1
+.L2:
+	cmp	DWORD PTR -20[rbp], 9
+	jle	.L3
+	mov	eax, DWORD PTR -4[rbp]
+	mov	esi, eax
+	lea	rdi, .LC0[rip]
+	mov	eax, 0
+	call	printf@PLT
+	mov	eax, 0
+	leave
+	ret
+\end{lstlisting}
 
 \noindent\begin{minipage}{.45\textwidth}
     \begin{lstlisting}[caption=Optimisation O1, style=customasm]
@@ -1588,12 +1635,32 @@ On donne ci-dessous les deux codes obtenus:\\
         ret
     \end{lstlisting}
 \end{minipage}
+\begin{itemize}
+    \item[$\bullet$] Première différence entre O0 et O1: le code assembleur utilise plus de registres et ne fait pas d'accès en RAM.\\
+    \item[$\bullet$] Deuxième différence : au niveau O2, on utilise plutôt des instructions comme \texttt{xor rax, rax} pour remplacer les instructions \texttt{mov rax, 0} qui sont plus rapides et prennent moins de place en mémoire.\\
+    \item[$\bullet$] Troisième différence : le niveau O2 déplace des instructions afin de réduire les bulles.
+    Par exemple, la ligne 11 du code O2 correspond à la ligne 27 du code O1.\\    
+\end{itemize}
 
-Première différence : au niveau O2, on utilise plutôt des instructions comme \texttt{xor rax, rax} pour remplacer les instructions \texttt{mov rax, 0} qui sont plus rapides et prennent moins de place en mémoire.\\
+\begin{figure}[!h]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        Type & Superscalar, Superpipeline\\
+        \hline
+        OoOE & Yes\\
+        \hline
+        Speculative	& Yes\\
+        \hline
+        Reg Renaming & Yes\\
+        \hline
+        Stages & 14-19\\
+        \hline
+    \end{tabular}
+    \caption{Description du pipeline de l'architecture skylake}
+\end{figure}
 
-Deuxième différence : le niveau O2 déplace des instructions afin de réduire les bulles.
-Par exemple, la ligne 11 du code O2 correspond à la ligne 27 du code O1.\\
 
-% Après exo 4, aller sur wikichip et étudier la description du pipeline de l'architecture skylake.
+
 
 \end{document}
