@@ -1657,10 +1657,13 @@ main:
         Stages & 14-19\\
         \hline
     \end{tabular}
-    \caption{Description du pipeline de l'architecture skylake}
+    \caption{Description du pipeline de l'architecture skylake.}
 \end{figure}
 
-
+OoOE signifie \textit{Out-of-Order Execution} : les instructions ne sont pas forcément exécutées dans l'ordre dans lequel elles sont écrites dans le programme.
+\textit{Speculative}, pour \textit{Speculative Execution}, désigne le lancement anticipé d'instructions.
+\textit{Reg Renaming} signifie \textit{Register Renaming} : les registres sont renommés afin de réordonner les dépendances entre les instructions. Tous ces termes sont des aspects d'une architecture superscalaire basée sur un fonctionnement avec plusieurs \textit{pipelines} en parallèle.
+Le terme \textit{superpipeline} désigne quant à lui une amélioration du modèle de \textit{pipeline} qui traite les instructions sur sept niveaux\footnote{Pré-chargement, premier décodage, deuxième décodage, première génération d'adresse, deuxième génération d'adresse de retour, exécution de l'instruction, écriture des données via les adresses prégénérées.} ou plus (certaines architectures utilisent des \textit{pipelines} à 10 voire 20 ou 21 niveaux) et non quatre comme décrit dans le cours pour un pipeline classique.
 
 
 \end{document}
