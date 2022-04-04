@@ -1667,5 +1667,52 @@ Le terme \textit{superpipeline} désigne quant à lui une amélioration du modè
 
 \section{Chapitre 7}
 
+\subsection{Exercice 1}
+a. On donne le code assembleur suivant :
+\begin{lstlisting}[style=CStyle]
+int sum(int n)
+{
+    cur = 0,1,2,3;
+    w = 4,4,4,4;
+    s = 0,0,0,0;
+    for(int i = 0; i < n/4; i++)
+    {
+        s = s + cur;
+        cur = cur + w;
+    }
+    return sum_comp(s);
+}
+\end{lstlisting}
+
+b. Si $n$ n'est pas multiple de 4, on ajoute une instruction qui calcule la somme des \texttt{n \% 4} dernières valeurs.
+
+c. On commence par tester si \texttt{edi = 0} et si c'est le cas, on sort directement.
+Ensuite, on associe \texttt{(n-4)/4+1} à \texttt{eax} et \texttt{n-1} à \texttt{ecx}.
+On compare \texttt{ecx} à 8, qui est la valeur de seuil.
+Autrement dit, on traitera les entrées modulo 4 et décalées de 4, car le compilateur considère que cette valeur de seuil est la plus rentable\footnote{Pour un seuil $s_k = 4k$, on aurait "$\texttt{eax} = \frac{n-s_k}{4}+1$" et "\texttt{cmp ecx $s_k+4$}"}.
+Il restera donc au plus 7 entrées à traiter après la boucle.\\
+La vectorisation se fait dans les lignes qui suivent : \texttt{xmmO} représente la variable \texttt{s} et vaut \texttt{0,0,0,0} initialement.
+\texttt{xmm2} représente la variable \texttt{w} et vaut \texttt{4,4,4,4}, et \texttt{xmm1} représente la variable \texttt{cur} et vaut \texttt{0,1,2,3} initialement.\\
+Les opérations effectuées ensuite sont les suivantes :\\
+\begin{itemize}
+    \item[$\bullet$] \texttt{add ecx, 1} $\longrightarrow$ \texttt{i += 1}\\
+    \item[$\bullet$] \texttt{xmm0 += xmm1} $\longrightarrow$ \texttt{s += cur}\\
+    \item[$\bullet$] \texttt{xmm1 += xmm2} $\longrightarrow$ \texttt{cur += w}\\
+\end{itemize}
+L'opération correspondant à \texttt{sum\_comp} est coûteuse et correspond à la commande \texttt{movd eax, xmm0}.
+Enfin, les potentiels restes sont traités par la suite (de $\frac{n-4}{4}+1$ à $n$) et la somme est effectuée en même temps.
+% (n - 4)/4 + 1
+% n - 1 <= 8 ?
+%     true : edx = 0, eax = 0
+%     false:  xmm0 = 0,0,0,0 -> s
+%             xmm2 = 4,4,4,4 -> w
+%             ecx = 0 -> i
+%             xmm1 = 0,1,2,3 -> cur
+%             ecx = 1 -> i
+%             xmm0 += xmm1 -> s+=cur
+%             xmm1 += xmm2 -> cur+=w
+            
+
+
 
 \end{document}

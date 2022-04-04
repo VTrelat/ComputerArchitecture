@@ -1,8 +1,7 @@
-void sincr(char *t, int n)
+int sum(int n)
 {
-    for (int i = 0; i < n; i++)
-    {
-        (*t) += 1;
-        ++t;
-    }
+    int s = 0;
+    for (int i = 1; i <= n; i++)
+        s += i;
+    return s;
 }
