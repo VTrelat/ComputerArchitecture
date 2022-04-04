@@ -1690,7 +1690,7 @@ c. On commence par tester si \texttt{edi = 0} et si c'est le cas, on sort direct
 Ensuite, on associe \texttt{(n-4)/4+1} à \texttt{eax} et \texttt{n-1} à \texttt{ecx}.
 On compare \texttt{ecx} à 8, qui est la valeur de seuil.
 Autrement dit, on traitera les entrées modulo 4 et décalées de 4, car le compilateur considère que cette valeur de seuil est la plus rentable\footnote{Pour un seuil $s_k = 4k$, on aurait "$\texttt{eax} = \frac{n-s_k}{4}+1$" et "\texttt{cmp ecx $s_k+4$}"}.
-Il restera donc au plus 7 entrées à traiter après la boucle.\\
+Il restera donc au plus 7 entrées à traiter après la boucle (ce sont les données non vectorisables).\\
 La vectorisation se fait dans les lignes qui suivent : \texttt{xmmO} représente la variable \texttt{s} et vaut \texttt{0,0,0,0} initialement.
 \texttt{xmm2} représente la variable \texttt{w} et vaut \texttt{4,4,4,4}, et \texttt{xmm1} représente la variable \texttt{cur} et vaut \texttt{0,1,2,3} initialement.\\
 Les opérations effectuées ensuite sont les suivantes :\\
@@ -1699,20 +1699,46 @@ Les opérations effectuées ensuite sont les suivantes :\\
     \item[$\bullet$] \texttt{xmm0 += xmm1} $\longrightarrow$ \texttt{s += cur}\\
     \item[$\bullet$] \texttt{xmm1 += xmm2} $\longrightarrow$ \texttt{cur += w}\\
 \end{itemize}
-L'opération correspondant à \texttt{sum\_comp} est coûteuse et correspond à la commande \texttt{movd eax, xmm0}.
+Les opérations correspondant à \texttt{sum\_comp} sont coûteuses et correspondent aux commandes :\\
+\begin{lstlisting}[style=customasm]
+movdqa  xmm1, xmm0
+cmp     edi, edx
+psrldq  xmm1, 8
+paddd   xmm0, xmm1
+movdqa  xmm1, xmm0
+psrldq  xmm1, 4
+paddd   xmm0, xmm1
+movd    eax, xmm0
+\end{lstlisting}
 Enfin, les potentiels restes sont traités par la suite (de $\frac{n-4}{4}+1$ à $n$) et la somme est effectuée en même temps.
-% (n - 4)/4 + 1
-% n - 1 <= 8 ?
-%     true : edx = 0, eax = 0
-%     false:  xmm0 = 0,0,0,0 -> s
-%             xmm2 = 4,4,4,4 -> w
-%             ecx = 0 -> i
-%             xmm1 = 0,1,2,3 -> cur
-%             ecx = 1 -> i
-%             xmm0 += xmm1 -> s+=cur
-%             xmm1 += xmm2 -> cur+=w
-            
 
+\subsection{Exercice 2}
+\begin{itemize}
+    \item[(i)] C'est vectorisable et \texttt{gcc} y parvient.\\
+    \item[(ii)] C'est vectorisable et \texttt{gcc} n'y parvient pas.\\
+    \item[(iii)] C'est vectorisable et \texttt{gcc} n'y parvient pas.\\
+    \item[(iv)] C'est vectorisable et \texttt{gcc} y parvient.\\
+\end{itemize}
 
+Le compilateur n'arrive pas à vectoriser les codes dans lesquels il y un décalage à gérer, car la structure de la boucle ne répond pas à un certain motif prédéfini. Ainsi, si intuitivement un cerveau humain peut facilement modifier le code dans le but de le rendre vectorisable, le compilateur n'en est pas (encore) capable.
+
+\subsection{Exercice 3}
+a. Le code a été vectorisé.\\
+
+b. \begin{itemize}
+    \item[\texttt{pcmpgtd}] : effectue une comparaison signée en SIMD avec la condition \textit{greater than} pour \textit{double word}.\\
+    \item[\texttt{pand}] : opérateur et logique pour des registres XMM (128 bits).\\
+    \item[\texttt{pandn}] : opérateur de non et logique pour des registres XMM (128 bits). $\texttt{pandn $p$ $q$} \equiv p \leftarrow \neg p \wedge q$.\\ 
+\end{itemize}
+
+\begin{lstlisting}[style=customasm]
+; On dispose du registre xmm2 = 1,1,1,1.
+pcmpgtd xmm1, xmm0
+xmm0 = xmm1
+pandn xmm1, xmm2
+por xmm0, xmm1
+\end{lstlisting}
+
+c. 
 
 \end{document}
