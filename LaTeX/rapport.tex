@@ -1,6 +1,7 @@
 \documentclass[11pt, a4 paper]{article}
 \usepackage[french]{babel}
 \usepackage{amsmath, amsthm, amsfonts, amssymb, mathrsfs}
+\usepackage{geometry}
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{caption}
@@ -1689,7 +1690,7 @@ b. Si $n$ n'est pas multiple de 4, on ajoute une instruction qui calcule la somm
 c. On commence par tester si \texttt{edi = 0} et si c'est le cas, on sort directement.
 Ensuite, on associe \texttt{(n-4)/4+1} à \texttt{eax} et \texttt{n-1} à \texttt{ecx}.
 On compare \texttt{ecx} à 8, qui est la valeur de seuil.
-Autrement dit, on traitera les entrées modulo 4 et décalées de 4, car le compilateur considère que cette valeur de seuil est la plus rentable\footnote{Pour un seuil $s_k = 4k$, on aurait "$\texttt{eax} = \frac{n-s_k}{4}+1$" et "\texttt{cmp ecx $s_k+4$}"}.
+Autrement dit, on traitera les entrées modulo 4 et décalées de 4, car le compilateur considère que cette valeur de seuil est la plus rentable.
 Il restera donc au plus 7 entrées à traiter après la boucle (ce sont les données non vectorisables).\\
 La vectorisation se fait dans les lignes qui suivent : \texttt{xmmO} représente la variable \texttt{s} et vaut \texttt{0,0,0,0} initialement.
 \texttt{xmm2} représente la variable \texttt{w} et vaut \texttt{4,4,4,4}, et \texttt{xmm1} représente la variable \texttt{cur} et vaut \texttt{0,1,2,3} initialement.\\
@@ -1726,19 +1727,129 @@ Le compilateur n'arrive pas à vectoriser les codes dans lesquels il y un décal
 a. Le code a été vectorisé.\\
 
 b. \begin{itemize}
-    \item[\texttt{pcmpgtd}] : effectue une comparaison signée en SIMD avec la condition \textit{greater than} pour \textit{double word}.\\
+    \item[\texttt{pcmpgtd}] : effectue une comparaison signée en SIMD avec la condition \textit{greater than} pour \textit{double word}. Assigne au premier opérande un masque binaire correspondant au résultat de la comparaison composante par composante.\\
     \item[\texttt{pand}] : opérateur et logique pour des registres XMM (128 bits).\\
-    \item[\texttt{pandn}] : opérateur de non et logique pour des registres XMM (128 bits). $\texttt{pandn $p$ $q$} \equiv p \leftarrow \neg p \wedge q$.\\ 
+    \item[\texttt{pandn}] : opérateur de non et logique pour des registres XMM (128 bits). $\texttt{pandn $p$ $q$} \equiv p \leftarrow p \wedge \neg q$.\\ 
 \end{itemize}
 
+On donne ci-dessous le code permettant d'avoir le minimum terme à terme de deux vecteurs:
 \begin{lstlisting}[style=customasm]
-; On dispose du registre xmm2 = 1,1,1,1.
-pcmpgtd xmm1, xmm0
-xmm0 = xmm1
-pandn xmm1, xmm2
+movdqa xmm2, xmm1
+pcmpgtd xmm2, xmm0
+pand xmm1, xmm2
+pandn xmm0, xmm2
 por xmm0, xmm1
+;xmm0 contient le minimum composante par composante de xmm0 et xmm1
 \end{lstlisting}
 
-c. 
+\pagebreak
+\newgeometry{left=2cm, right=2cm}
+c. On donne ci-dessous le code produit par le compilateur :\\
+
+\noindent\begin{minipage}{.46\textwidth}
+\begin{lstlisting}[style=customasm]
+_min:
+## %bb.0:
+	push	rbp
+	mov	rbp, rsp
+	mov	eax, dword ptr [rdi]
+	cmp	esi, 2
+	jl	LBB0_11
+## %bb.1:
+	mov	ecx, esi
+	lea	r8, [rcx - 1]
+	mov	edx, 1
+	cmp	r8, 8
+	jb	LBB0_10
+## %bb.2:
+	mov	rdx, r8
+	and	rdx, -8
+	movd	xmm0, eax
+	pshufd	xmm0, xmm0, 0
+	lea	rax, [rdx - 8]
+	mov	r9, rax
+	shr	r9, 3
+	add	r9, 1
+	test	rax, rax
+	je	LBB0_3
+## %bb.4:
+	mov	rax, r9
+	and	rax, -2
+	neg	rax
+	mov	esi, 1
+	movdqa	xmm1, xmm0
+LBB0_5:
+	movdqu	xmm2, xmmword ptr [rdi + 4*rsi]
+	pminsd	xmm2, xmm0
+	movdqu	xmm3, xmmword ptr [rdi + 4*rsi + 16]
+	pminsd	xmm3, xmm1
+	movdqu	xmm0, xmmword ptr [rdi + 4*rsi + 32]
+	pminsd	xmm0, xmm2
+	movdqu	xmm1, xmmword ptr [rdi + 4*rsi + 48]
+	pminsd	xmm1, xmm3
+	add	rsi, 16
+	add	rax, 2
+	jne	LBB0_5
+\end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.46\textwidth}
+\begin{lstlisting}[style=customasm, firstnumber=43]
+## %bb.6:
+	test	r9b, 1
+	je	LBB0_8
+LBB0_7:
+	movdqu	xmm2, xmmword ptr [rdi + 4*rsi]
+	pminsd	xmm0, xmm2
+	movdqu	xmm2, xmmword ptr [rdi + 4*rsi + 16]
+	pminsd	xmm1, xmm2
+LBB0_8:
+	pminsd	xmm0, xmm1
+	pshufd	xmm1, xmm0, 238
+	pminsd	xmm1, xmm0
+	pshufd	xmm0, xmm1, 85
+	pminsd	xmm0, xmm1
+	movd	eax, xmm0
+	cmp	r8, rdx
+	je	LBB0_11
+## %bb.9:
+	or	rdx, 1
+LBB0_10:
+	mov	esi, dword ptr [rdi + 4*rdx]
+	cmp	esi, eax
+	cmovl	eax, esi
+	add	rdx, 1
+	cmp	rcx, rdx
+	jne	LBB0_10
+LBB0_11:
+	pop	rbp
+	ret
+LBB0_3:
+	mov	esi, 1
+	movdqa	xmm1, xmm0
+	test	r9b, 1
+	jne	LBB0_7
+	jmp	LBB0_8
+\end{lstlisting}
+\end{minipage}
+
+Tout d'abord, on observe que la vectorisation se fait sur des vecteurs de taille 8 (L.19-22), et donc les données sont espacées en mémoire de 2 octets (16 bits\footnote{Les registres xmm peuvent stocker 128 bits.}).
+La commande utilisée pour trouver le min est \texttt{pminsd}.
+
+\restoregeometry
+
+\subsection{Exercice 4}
+a. On dispose de 1024\footnote{$\frac{64~\text{ko}}{64~\text{o par ligne}}$} blocs et $\frac{64*1024}{64} = 1024$ sous-caches contenant chacun un bloc.
+On sait également que les entiers sont codés sur 4 octets, un bloc peut donc contenir 16 entiers. On peut donc stocker en cache $1024 \times 16 = 16384$ entiers simultanément. De plus, on accède aux données dans le tableau (ou dans chaque sous-tableau) de manière consécutive.\\
+
+Le tableau est divisé en 3 sous-tableaux de taille \texttt{LARGEUR*HAUTEUR}. On stocke les entiers par blocs de 16, donc pour un sous-tableau, on fera donc $\displaystyle{\frac{\texttt{LARGEUR} \times \texttt{HAUTEUR}}{16}}$ accès hors-caches.\\
+
+\begin{itemize}
+    \item[(a)] Pour un total de $1600\times 1000 = 16 * 100000$ pixels, on fera donc 100 000 accès hors-chache par sous-tableau, donc 300 000 accès hors-cache au total.\\
+    \item[(b)] Pour un total de $1024\times 1024 = 16 \times 65536$ pixels, on fera donc 65536 accès hors-chache par sous-tableau, donc 196 608 accès hors-cache au total.\\
+\end{itemize}
+
+b. Pour une associativité 8, on dispose de $\frac{64\times 1024}{8 \times 64} = 128$ sous-caches, contenant chacun $\frac{1024}{128} = 8$ blocs.
+À chaque accès hors-cache, on charge donc $8 \times 16 = 128$ entiers en cache.
+Si $\texttt{LARGEUR} = \texttt{HAUTEUR} = 1024$, on fera $\frac{1024\times 1024}{128} = 8192$ accès hors-cache.\\
 
 \end{document}
