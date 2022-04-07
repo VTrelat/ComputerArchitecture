@@ -1877,7 +1877,8 @@ c. \begin{itemize}
         }
         \caption{Algorithme pseudo-code vectorisé}
     \end{algorithm}
-    Cet algorithme peut être amélioré en ajoutant par exemple un seuil inférieur (16, 32) pour éviter de vectoriser sur des vecteurs de taille inférieure à ce seuil. On peut aussi ajouter le traitement des cases restantes du tableau si ce dernier n'est pas de taille divisible par 16.
+    Cet algorithme peut être amélioré en ajoutant par exemple un seuil inférieur (16, 32) pour éviter de vectoriser sur des vecteurs de taille inférieure à ce seuil. On peut aussi ajouter le traitement des cases restantes du tableau si ce dernier n'est pas de taille divisible par 16.\\
+    On pourrait aussi imaginer profiter des registres \texttt{zmm} et poser $$W := w @ w @ w$$(comprendre la concaténation triple de $w$) puis effectuer directement l'opération $$\texttt{dest}[i:i+15+2\times \texttt{LARGEUR}\times\texttt{HAUTEUR}] = W$$ mais c'est probablement bien plus coûteux.\\
 \end{itemize}
 
 \end{document}
