@@ -1841,7 +1841,7 @@ La commande utilisée pour trouver le min est \texttt{pminsd}.
 a. On dispose de 1024\footnote{$\frac{64~\text{ko}}{64~\text{o par ligne}}$} blocs et $\frac{64*1024}{64} = 1024$ sous-caches contenant chacun un bloc.
 On sait également que les entiers sont codés sur 4 octets, un bloc peut donc contenir 16 entiers. On peut donc stocker en cache $1024 \times 16 = 16384$ entiers simultanément. De plus, on accède aux données dans le tableau (ou dans chaque sous-tableau) de manière consécutive.\\
 
-Le tableau est divisé en 3 sous-tableaux de taille \texttt{LARGEUR*HAUTEUR}. On stocke les entiers par blocs de 16, donc pour un sous-tableau, on fera donc $\displaystyle{\frac{\texttt{LARGEUR} \times \texttt{HAUTEUR}}{16}}$ accès hors-caches.\\
+Le tableau est divisé en 3 sous-tableaux de taille \texttt{LARGEUR*HAUTEUR}. On stocke les entiers par blocs de 16, donc pour un sous-tableau, on fera donc $\frac{\texttt{LARGEUR} \times \texttt{HAUTEUR}}{16}$ accès hors-caches.\\
 
 \begin{itemize}
     \item[(a)] Pour un total de $1600\times 1000 = 16 * 100000$ pixels, on fera donc 100 000 accès hors-chache par sous-tableau, donc 300 000 accès hors-cache au total.\\
@@ -1852,6 +1852,32 @@ b. Pour une associativité 8, on dispose de $\frac{64\times 1024}{8 \times 64} =
 À chaque accès hors-cache, on charge donc un total de $8 \times 16 = 128$ entiers en cache simultanément.
 Si $\texttt{LARGEUR} = \texttt{HAUTEUR} = 1024$, on fera $\frac{1024\times 1024}{128} = 8192$ accès hors-cache par sous-tableau, donc 24 576 en tout.\\
 
-c. 
+c. \begin{itemize}
+    \item[\textbf{Solution A}] On accède à des cases dans le tableau de la manière suivante : à l'étape $i$, on accède à $\texttt{image}[f_j(i)]$ où $f_j$ est la fonction définie par :\\ 
+    \begin{equation*}
+    f_j(i) = 3 \times i + j~\text{où}~j \in \{0,1,2\}
+    \end{equation*}
+    Or, ces accès ne se font pas sur des valeurs consécutives de $i$, donc \texttt{gcc} ne peut pas les vectoriser.\\
+    \item[\textbf{Solution B}] On accède à des cases dans le tableau de la manière suivante : à l'étape $i$, on accède à $\texttt{image}[i+j\times\texttt{LARGEUR}\times\texttt{HAUTEUR}]$ où $j \in \{0,1,2\}$. Cette fois, on accède bien à des valeurs consécutives dans le tableau, et \texttt{gcc} peut vectoriser le code.\\
+    On peut par exemple vectoriser sur des vecteurs de taille 16.
+    En effet, chaque case du tableau contient une valeur 8 bits (de \texttt{0x00} à \texttt{0xFF}), et un registre \texttt{xmm} est de taille 128 bits. Dans le cadre des sous-tableaux, on peut donc se servir du contexte SIMD puisqu'on effectue la même opération sur la somme des valeurs obtenue dans chaque sous-tableau et les résultats sont stockés dans un tableau de sortie avec les mêmes indices.\\
+
+    On donne ci-dessous un algorithme pseudo-code proposant une vectorisation de la conversion d'une image en niveaux de gris:\\
+    \begin{algorithm}[H]
+        \SetAlgoLined
+        \KwData{An image of size $\texttt{LARGEUR} \times \texttt{HAUTEUR}$}
+        \ForAll{$i \in [\![0, \dots, \left\lfloor \frac{\texttt{LARGEUR}\times\texttt{HAUTEUR}}{16} \right\rfloor]\!]$}{
+            $v_R := \texttt{image}[i:i+15]$\;
+            $v_G := \texttt{image}[i+\texttt{LARGEUR}\times\texttt{HAUTEUR}:i+\texttt{LARGEUR}\times\texttt{HAUTEUR}+15]$\;
+            $v_B := \texttt{image}[i+2\times\texttt{LARGEUR}\times\texttt{HAUTEUR}:i+2\times\texttt{LARGEUR}\times\texttt{HAUTEUR}+15]$\;
+            $w := \displaystyle\frac{v_R + v_G + v_B}{3}$\;
+            $\texttt{dest}[i:i+15] = w$\;
+            $\texttt{dest}[i+\texttt{LARGEUR}\times\texttt{HAUTEUR}:i+\texttt{LARGEUR}\times\texttt{HAUTEUR}+15] = w$\;
+            $\texttt{dest}[i+2\times\texttt{LARGEUR}\times\texttt{HAUTEUR}:i+2\times\texttt{LARGEUR}\times\texttt{HAUTEUR}+15] = w$\;
+        }
+        \caption{Algorithme pseudo-code vectorisé}
+    \end{algorithm}
+    Cet algorithme peut être amélioré en ajoutant par exemple un seuil inférieur (16, 32) pour éviter de vectoriser sur des vecteurs de taille inférieure à ce seuil. On peut aussi ajouter le traitement des cases restantes du tableau si ce dernier n'est pas de taille divisible par 16.
+\end{itemize}
 
 \end{document}
