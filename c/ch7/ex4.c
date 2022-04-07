@@ -1,11 +1,11 @@
-#include <stdio.h>
+#include <stdlib.h>
 
 char *flatten(char *image, int WIDTH, int HEIGHT)
 {
-    // int U = WIDTH * HEIGHT;
-    // int V = 1;
-    int U = 1;
-    int V = 3;
+    int U = WIDTH * HEIGHT;
+    int V = 1;
+    // int U = 1;
+    // int V = 3;
     char *dest = malloc(WIDTH * HEIGHT * 3);
     int i, moy;
     char gris;
