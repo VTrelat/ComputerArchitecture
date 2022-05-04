@@ -295,7 +295,7 @@ c. En suivant la règle de signes, 1010 est l'encodage de -2.
 \subsection{Exercice 7}
 Soit $b$ un nombre de bits. Soit $x$ un entier relatif qu'on souhaite représenter sur $b$ bits.\\
 Si $x \geq 0$, alors l'encodage de $x$ correspond à une écriture dans $[0, 2^{b-1}-1]$, alors cette écriture commence par un zéro (de 00...0 à 01...1).
-Si $x < 0$, alors $2^b - x \in [2^{b-1}, 2^b-1]$ (soit de 10...0 à 11...1), son écriture commence par un 1.
+Si $x < 0$, alors $2^b + x \in [2^{b-1}, 2^b-1]$ (soit de 10...0 à 11...1), son écriture commence par un 1.
 
 \halmos
 
@@ -772,7 +772,7 @@ Cela peut nécessiter une soustraction, par exemple, ou encore un modulo, qui es
 \begin{framed}
     \textbf{Conclusion} :
     Néanmoins, la vraie différence vient d'un autre phénomène qui est la mise en cache de données\footnote{cf Chapitre 3}.
-    Lorsqu'on fait des accès séquentiel, on charge des blocs en cache, et on fait une suite d'accès en cache, ce qui est rapide.
+    Lorsqu'on fait des accès séquentiels, on charge des blocs en cache, et on fait une suite d'accès en cache, ce qui est rapide.
     Lorsqu'on fait une suite d'accès aléatoires, on fait des accès hors-cache presque à chaque nouvel accès, puisque la probabilité que deux accès consécutifs concernent des données présentes dans un même bloc est beaucoup plus faible.
 \end{framed}
 
@@ -793,7 +793,7 @@ On vérifie déjà qu'une instance de type \texttt{noeud} occupe bien 24 octets 
 \begin{lstlisting}[style=CStyle]
 printf("sizeof noeud: %lu o", sizeof(struct noeud));
 \end{lstlisting}
-Le fait que la somme des tailles diffère de la taille de la somme (de la structure) provient de la compilation : le compilateur fait de l'alignment (\textit{padding}) sur des multiples de 8 afin qu'un élément se trouve toujours en début de bloc.
+Le fait que la somme des tailles diffère de la taille de la somme (de la structure) provient de la compilation : le compilateur fait de l'alignement (\textit{padding}) sur des multiples de 8 afin qu'un élément se trouve toujours en début de bloc.
 Ainsi, un \texttt{noeud} occupe une taille de $20+4=24$ octets.\\
 
 a. On peut stocker $\frac{32\times1024}{64} = 512$ blocs.
